@@ -1,19 +1,27 @@
+from typing import List
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
 import matplotlib
 
+from models.signal import Signal
+
 matplotlib.use('agg')
 from datetime import datetime, timedelta
 
-def plot(data):
+type Data = List[Signal.timestamp] # List[Signal.timestamp
+def plot(data: Data):
     # Example input data
     # data = [
-    #     {"timestamp": "2024-07-13T12:00:00", "at": "2024-07-13T12:01:00"},
-    #     {"timestamp": "2024-07-13T12:05:00", "at": "2024-07-13T12:06:00"},
+    #     {"timestamp": "2024-07-13 22:56:10.010", "at": "2024-07-13T12:01:00"},
+    #     {"timestamp": "2024-07-13 22:59:00.000", "at": "2024-07-13T12:06:00"},
     #     # Add more records as needed
     # ]
+
+    for row in data:
+        row["timestamp"] = round_to_nearest_minute(row["timestamp"])
 
     # Convert input data to DataFrame
     df = pd.DataFrame(data)
@@ -56,3 +64,18 @@ def plot(data):
 #     {"timestamp": "2024-07-13T12:05:00", "at": "2024-07-13T12:06:00"},
 #     # Add more records as needed
 # ])
+
+def round_to_nearest_minute(dt_str):
+    # Parse the datetime string
+    dt = dt_str#datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S.%f")
+
+    # Calculate the seconds since the last minute
+    seconds = dt.second + dt.microsecond / 1_000_000
+
+    # Round to the nearest minute
+    if seconds >= 30:
+        dt += timedelta(minutes=1)
+
+    # Truncate to remove seconds and microseconds
+    dt = dt.replace(second=0, microsecond=0)
+    return dt
