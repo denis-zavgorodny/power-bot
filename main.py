@@ -17,12 +17,6 @@ config = dotenv_values(".env")
 def create_tables():
     db.create_all()
 
-@app.route("/")
-def hello_world():
-    return {
-        "message": "success"
-    }
-
 def api_key_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
