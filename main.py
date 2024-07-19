@@ -83,11 +83,10 @@ def stat():
 
     img = plot(signals)
     return """
-        <h1>Time zone diff: {1} ({2})</h1>
         <div>
             <img src='data:image/png;base64,{0}'>
         </div>
-    """.format(img, difference_in_hours, tzlocal.get_localzone()), 200
+    """.format(img), 200
 
 @app.route("/status")
 def status():
@@ -108,14 +107,16 @@ def status():
 
 
 def get_time_difference_in_hours():
-    local_timezone = tzlocal.get_localzone()
-    home_timezone = pytz.timezone('Europe/Kiev')
-    time1 = datetime.now(local_timezone)
-    time2 = datetime.now(home_timezone)
-    time_difference = time2 - time1
-    difference_in_hours = time_difference.total_seconds() / 3600
+    # local_timezone = tzlocal.get_localzone()
+    # home_timezone = pytz.timezone('Etc/UTC')
+    # time1 = datetime.now(local_timezone)
+    # time2 = datetime.now(home_timezone)
+    # time_difference = time2 - time1
+    # difference_in_hours = time_difference.total_seconds() / 3600
 
-    return round(difference_in_hours)
+    # return round(difference_in_hours)
+
+    return 3
 
 if __name__ == '__main__':
     app.run(debug=True)
