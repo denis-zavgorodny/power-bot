@@ -47,7 +47,7 @@ def plot(data):
     plt.plot(time_series_df['time'], time_series_df['value'], marker='o', linestyle='-', color='b')
     plt.xlabel('Time')
     plt.ylabel('Value')
-    plt.title('Time Series Chart')
+    plt.title('Power supply over time')
     plt.grid(True)
     plt.xticks(rotation=45)
     plt.tight_layout()
