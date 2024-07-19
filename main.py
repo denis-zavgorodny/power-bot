@@ -82,7 +82,12 @@ def stat():
         return "<div>NO DATA. PLease use: <pre>/stat?from=2024-07-10&to=2024-07-30</pre></div>", 404
 
     img = plot(signals)
-    return "<div><img src='data:image/png;base64,{0}'></div>".format(img), 200
+    return """
+        <h1>Time zone diff: {1}</h1>
+        <div>
+            <img src='data:image/png;base64,{0}'>
+        </div>
+    """.format(img, difference_in_hours), 200
 
 @app.route("/status")
 def status():
