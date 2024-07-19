@@ -21,8 +21,7 @@ greating = """
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup()
-    markup.row(types.KeyboardButton(GET_STATUS))
-    markup.row(types.KeyboardButton(SUBSCRIBE))
+    markup.row(types.KeyboardButton(GET_STATUS), types.KeyboardButton(SUBSCRIBE))
 
     bot.reply_to(message, greating, reply_markup=markup)
 
@@ -50,14 +49,14 @@ def get_status(message):
     response = requests.get(config.get("GET_STATUS_ENDPOINT"))
 
     if response.status_code == 200:
-        bot.reply_to(message, "Світло є!")
+        bot.reply_to(message, "💡💡💡 Світло є!")
     else:
-        bot.reply_to(message, "Світла немає :(")
+        bot.reply_to(message, "🔦 Світла немає. Готуйте ліхтарик.")
 
 
 @bot.message_handler(func=lambda message: message.text == SUBSCRIBE)
 def get_status(message):
-    bot.reply_to(message, "Підписано")
+    bot.reply_to(message, "Ще не працює, але от от вже буде!")
 
 if __name__ == '__main__':
     # Start the bot
