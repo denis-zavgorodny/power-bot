@@ -98,7 +98,7 @@ def status():
     res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
         Signal.timestamp > current_time
     )).fetchall()
-    signals = [{"timestamp": row[1] + timedelta(hours=difference_in_hours), "at": row[2] + timedelta(hours=difference_in_hours)} for row in res]
+    signals = [{"timestamp": row[1] - timedelta(hours=difference_in_hours), "at": row[2] - timedelta(hours=difference_in_hours)} for row in res]
 
     if len(signals) < 1:
         return "<div>NO POWER</div>", 404
@@ -121,7 +121,7 @@ def get_time_difference_in_hours():
 
     # return round(difference_in_hours)
 
-    return 3
+    return -3
 
 if __name__ == '__main__':
     app.run(debug=True)
