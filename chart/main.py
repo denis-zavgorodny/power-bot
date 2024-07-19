@@ -11,8 +11,7 @@ from models.signal import Signal
 matplotlib.use('agg')
 from datetime import datetime, timedelta
 
-type Data = List[Signal.timestamp] # List[Signal.timestamp
-def plot(data: Data):
+def plot(data: List[Signal.timestamp]):
     # Example input data
     # data = [
     #     {"timestamp": "2024-07-13 22:56:10.010", "at": "2024-07-13T12:01:00"},
