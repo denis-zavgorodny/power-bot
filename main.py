@@ -81,7 +81,7 @@ def stat():
     if len(signals) < 1:
         return "<div>NO DATA. PLease use: <pre>/stat?from=2024-07-10&to=2024-07-30</pre></div>", 404
 
-    img = plot(signals)
+    img = plot(signals, datetime.fromisoformat(select_from), datetime.fromisoformat(select_to))
     return """
         <div>
             <img src='data:image/png;base64,{0}'>

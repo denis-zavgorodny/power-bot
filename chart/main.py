@@ -11,7 +11,8 @@ from models.signal import Signal
 matplotlib.use('agg')
 from datetime import datetime, timedelta
 
-def plot(data):
+def plot(data, min, max):
+    print(min, max)
     # Example input data
     # data = [
     #     {"timestamp": "2024-07-13 22:56:10.010", "at": "2024-07-13T12:01:00"},
@@ -32,7 +33,7 @@ def plot(data):
     end_time = df['timestamp'].max()
 
     # Generate a time series with 1-minute intervals
-    time_range = pd.date_range(start=start_time, end=end_time, freq='T')
+    time_range = pd.date_range(start=min, end=max, freq='T')
 
     # Create a DataFrame to hold the time series data
     time_series_df = pd.DataFrame(time_range, columns=['time'])
