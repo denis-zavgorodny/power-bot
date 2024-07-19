@@ -50,14 +50,22 @@ def ping():
 
 @app.route("/stat")
 def stat():
-    # fromS = request.args.get('from')
+    select_from = request.args.get('from')
+    select_to = request.args.get('to')
 
     table = db.Table('signal')
-    res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select()).fetchall()
+    res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
+        # Signal.timestamp >= select_from
+        Signal.timestamp.between(select_from, select_to)
+    )).fetchall()
     signals = [{"timestamp": row[1], "at": row[2]} for row in res]
-    img = plot(signals)
 
+    if len(signals) < 1:
+        return "<div>NO DATA. PLease use: <pre>/stat?from=2024-07-10&to=2024-07-30</pre></div>", 404
+
+    img = plot(signals)
     return "<div><img src='data:image/png;base64,{0}'></div>".format(img), 200
+
 
 
 if __name__ == '__main__':
