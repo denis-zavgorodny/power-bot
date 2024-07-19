@@ -1,5 +1,3 @@
-from typing import List
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import base64
@@ -9,17 +7,11 @@ import matplotlib
 from models.signal import Signal
 
 matplotlib.use('agg')
-from datetime import datetime, timedelta
+from datetime import timedelta
+
+
 
 def plot(data, min, max):
-    print(min, max)
-    # Example input data
-    # data = [
-    #     {"timestamp": "2024-07-13 22:56:10.010", "at": "2024-07-13T12:01:00"},
-    #     {"timestamp": "2024-07-13 22:59:00.000", "at": "2024-07-13T12:06:00"},
-    #     # Add more records as needed
-    # ]
-
     for row in data:
         row["timestamp"] = round_to_nearest_minute(row["timestamp"])
 
@@ -27,10 +19,6 @@ def plot(data, min, max):
     df = pd.DataFrame(data)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df['at'] = pd.to_datetime(df['at'])
-
-    # Determine the start and end times for the time series
-    start_time = df['timestamp'].min()
-    end_time = df['timestamp'].max()
 
     # Generate a time series with 1-minute intervals
     time_range = pd.date_range(start=min, end=max, freq='T')
@@ -49,8 +37,8 @@ def plot(data, min, max):
     plt.xlabel('Time')
     plt.ylabel('Value')
     plt.title('Power supply over time')
-    plt.grid(True)
-    plt.xticks(rotation=45)
+    plt.grid(visible=True, axis='x')
+    plt.xticks(rotation=90)
     plt.tight_layout()
 
     tmpfile = BytesIO()
