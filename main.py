@@ -87,7 +87,7 @@ def stat():
         <div>
             <img src='data:image/png;base64,{0}'>
         </div>
-    """.format(img, difference_in_hours, pytz.timezone('Europe/Kiev')), 200
+    """.format(img, difference_in_hours, tzlocal.get_localzone()), 200
 
 @app.route("/status")
 def status():
