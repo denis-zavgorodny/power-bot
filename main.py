@@ -29,6 +29,19 @@ def api_key_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def get_parameter_key_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        data = request.args
+        api_key = data.get("key")
+        configured_key = config.get("HTTP_KEY")
+        print(configured_key)
+        if api_key != configured_key:
+            return jsonify({"error": "Authentication is required"}), 403
+
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route("/ping", methods=["POST"])
 @api_key_required
 def ping():
@@ -47,8 +60,8 @@ def ping():
     else:
         return jsonify({"error": "No timestamp provided"}), 400
 
-
 @app.route("/stat")
+@get_parameter_key_required
 def stat():
     select_from = request.args.get('from')
     select_to = request.args.get('to')
