@@ -83,11 +83,11 @@ def stat():
 
     img = plot(signals)
     return """
-        <h1>Time zone diff: {1}</h1>
+        <h1>Time zone diff: {1} ({2})</h1>
         <div>
             <img src='data:image/png;base64,{0}'>
         </div>
-    """.format(img, difference_in_hours), 200
+    """.format(img, difference_in_hours, pytz.timezone('Europe/Kiev')), 200
 
 @app.route("/status")
 def status():
