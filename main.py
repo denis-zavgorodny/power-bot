@@ -98,7 +98,7 @@ def status():
     res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
         Signal.timestamp > current_time
     )).fetchall()
-    signals = [{"timestamp": row[1] - timedelta(hours=difference_in_hours), "at": row[2] - timedelta(hours=difference_in_hours)} for row in res]
+    signals = [{"timestamp": row[1] + timedelta(hours=difference_in_hours), "at": row[2] + timedelta(hours=difference_in_hours)} for row in res]
 
     if len(signals) < 1:
         return "<div>NO POWER</div>", 404
@@ -107,8 +107,13 @@ def status():
 
 
 def get_time_difference_in_hours():
+    ###
+    ### For some reason it does not calculate the diff between Kyiv
+    ### and UTM timezones. @todo: It needs to be figured out
+    ###
+
     # local_timezone = tzlocal.get_localzone()
-    # home_timezone = pytz.timezone('Etc/UTC')
+    # home_timezone = pytz.timezone('Europe/Kyiv')
     # time1 = datetime.now(local_timezone)
     # time2 = datetime.now(home_timezone)
     # time_difference = time2 - time1
