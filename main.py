@@ -2,12 +2,15 @@ from datetime import datetime
 from functools import wraps
 from typing import Any, Sequence
 
+from dotenv import dotenv_values
 from flask import request, jsonify, send_file
 from sqlalchemy import Row
 
 from chart.main import plot
 from init import db, app
 from models.signal import Signal
+
+config = dotenv_values(".env")
 
 # Initialize the database
 @app.before_request
@@ -24,7 +27,9 @@ def api_key_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         api_key = request.headers.get("API-KEY")
-        if api_key is None:
+        configured_key = config.get("API_KEY")
+
+        if api_key != configured_key:
             return jsonify({"error": "Authentication is required"}), 403
 
         return f(*args, **kwargs)
@@ -51,6 +56,8 @@ def ping():
 
 @app.route("/stat")
 def stat():
+    # fromS = request.args.get('from')
+
     table = db.Table('signal')
     res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select()).fetchall()
     signals = [{"timestamp": row[1], "at": row[2]} for row in res]

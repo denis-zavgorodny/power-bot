@@ -59,16 +59,7 @@ def plot(data: Data):
 
     return base64.b64encode(tmpfile.getvalue()).decode('utf-8')
 
-# plot([
-#     {"timestamp": "2024-07-13T12:00:00", "at": "2024-07-13T12:01:00"},
-#     {"timestamp": "2024-07-13T12:05:00", "at": "2024-07-13T12:06:00"},
-#     # Add more records as needed
-# ])
-
-def round_to_nearest_minute(dt_str):
-    # Parse the datetime string
-    dt = dt_str#datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S.%f")
-
+def round_to_nearest_minute(dt: Signal.timestamp):
     # Calculate the seconds since the last minute
     seconds = dt.second + dt.microsecond / 1_000_000
 
