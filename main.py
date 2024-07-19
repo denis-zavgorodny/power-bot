@@ -1,6 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import tzlocal
+import pytz
 from functools import wraps
-from typing import Any, Sequence
+from typing import Sequence
 
 from dotenv import dotenv_values
 from flask import request, jsonify, send_file
@@ -71,7 +73,10 @@ def stat():
         # Signal.timestamp >= select_from
         Signal.timestamp.between(select_from, select_to)
     )).fetchall()
-    signals = [{"timestamp": row[1], "at": row[2]} for row in res]
+
+    difference_in_hours = get_time_difference_in_hours()
+
+    signals = [{"timestamp": row[1] - timedelta(hours=difference_in_hours), "at": row[2] - timedelta(hours=difference_in_hours)} for row in res]
 
     if len(signals) < 1:
         return "<div>NO DATA. PLease use: <pre>/stat?from=2024-07-10&to=2024-07-30</pre></div>", 404
@@ -79,7 +84,33 @@ def stat():
     img = plot(signals)
     return "<div><img src='data:image/png;base64,{0}'></div>".format(img), 200
 
+@app.route("/status")
+def status():
+    current_time = datetime.utcnow() - timedelta(minutes=2)
 
+    difference_in_hours = get_time_difference_in_hours()
+
+    table = db.Table('signal')
+    res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
+        Signal.timestamp > current_time
+    )).fetchall()
+    signals = [{"timestamp": row[1] - timedelta(hours=difference_in_hours), "at": row[2] - timedelta(hours=difference_in_hours)} for row in res]
+
+    if len(signals) < 1:
+        return "<div>NO POWER</div>", 404
+
+    return "<div>POWER</div>", 200
+
+
+def get_time_difference_in_hours():
+    local_timezone = tzlocal.get_localzone()
+    home_timezone = pytz.timezone('Europe/Kiev')
+    time1 = datetime.now(local_timezone)
+    time2 = datetime.now(home_timezone)
+    time_difference = time2 - time1
+    difference_in_hours = time_difference.total_seconds() / 3600
+
+    return round(difference_in_hours)
 
 if __name__ == '__main__':
     app.run(debug=True)
