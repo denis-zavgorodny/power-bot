@@ -81,7 +81,12 @@ def stat():
     if len(signals) < 1:
         return "<div>NO DATA. PLease use: <pre>/stat?from=2024-07-10&to=2024-07-30</pre></div>", 404
 
-    img = plot(signals, datetime.fromisoformat(select_from), datetime.fromisoformat(select_to))
+    if datetime.now() < datetime.fromisoformat(select_to):
+        future_date = datetime.now() - timedelta(hours=difference_in_hours)
+    else:
+        future_date = datetime.fromisoformat(select_to) - timedelta(hours=difference_in_hours)
+
+    img = plot(signals, datetime.fromisoformat(select_from), future_date)
     return """
         <div>
             <img src='data:image/png;base64,{0}'>
