@@ -75,17 +75,21 @@ def stat():
     )).fetchall()
 
     difference_in_hours = get_time_difference_in_hours()
+    difference_in_hours_db = get_db_time_difference_in_hours()
 
-    signals = [{"timestamp": row[1] - timedelta(hours=difference_in_hours), "at": row[2] - timedelta(hours=difference_in_hours)} for row in res]
+    signals = [{"timestamp": row[1] - timedelta(hours=difference_in_hours_db), "at": row[2] - timedelta(hours=difference_in_hours_db)} for row in res]
 
     if len(signals) < 1:
         return "<div>NO DATA. PLease use: <pre>/stat?from=2024-07-10&to=2024-07-30</pre></div>", 404
 
+    print(datetime.now())
+    print(datetime.fromisoformat(select_to))
     if datetime.now() < datetime.fromisoformat(select_to):
         future_date = datetime.now() - timedelta(hours=difference_in_hours)
     else:
         future_date = datetime.fromisoformat(select_to) - timedelta(hours=difference_in_hours)
 
+    print(future_date)
     img = plot(signals, datetime.fromisoformat(select_from), future_date)
     return """
         <div>
@@ -97,7 +101,7 @@ def stat():
 def status():
     current_time = datetime.utcnow() - timedelta(minutes=2)
 
-    difference_in_hours = get_time_difference_in_hours()
+    difference_in_hours = get_db_time_difference_in_hours()
 
     table = db.Table('signal')
     res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
@@ -126,7 +130,12 @@ def get_time_difference_in_hours():
 
     # return round(difference_in_hours)
 
-    return -3
+
+    return int(config.get("TIME_ZONE_DIFF"))
+
+
+def get_db_time_difference_in_hours():
+    return int(config.get("DB_TIME_ZONE_DIFF"))
 
 if __name__ == '__main__':
     app.run(debug=True)
