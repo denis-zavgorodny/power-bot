@@ -37,7 +37,7 @@ def get_parameter_key_required(f):
         data = request.args
         api_key = data.get("key")
         configured_key = config.get("HTTP_KEY")
-        print(configured_key)
+
         if api_key != configured_key:
             return jsonify({"error": "Authentication is required"}), 403
 
@@ -82,14 +82,11 @@ def stat():
     if len(signals) < 1:
         return "<div>NO DATA. PLease use: <pre>/stat?from=2024-07-10&to=2024-07-30</pre></div>", 404
 
-    print(datetime.now())
-    print(datetime.fromisoformat(select_to))
     if datetime.now() < datetime.fromisoformat(select_to):
         future_date = datetime.now() - timedelta(hours=difference_in_hours)
     else:
         future_date = datetime.fromisoformat(select_to) - timedelta(hours=difference_in_hours)
 
-    print(future_date)
     img = plot(signals, datetime.fromisoformat(select_from), future_date)
     return """
         <div>
