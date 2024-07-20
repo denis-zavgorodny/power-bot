@@ -50,6 +50,10 @@ def send_welcome(message):
 
     bot.reply_to(message, greating, reply_markup=get_markup(chat_id))
 
+@bot.message_handler(commands=['ping'])
+def send_welcome(message):
+    notify(False)
+
 
 @bot.message_handler(commands=['options'])
 def send_options(message):
@@ -112,7 +116,7 @@ def notify(hasElectricuty):
     subscribed_users = get_all_users()
 
     for user in subscribed_users:
-        bot.send_message(user, message)
+        bot.send_message(user.chat_id, message)
 
 
 # Start the bot polling in a separate thread
