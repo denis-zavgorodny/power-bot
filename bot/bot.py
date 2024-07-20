@@ -9,7 +9,7 @@ from pooling import poolingStatus
 
 config = dotenv_values(".env")
 bot = telebot.TeleBot(config.get("BOT_TOKEN"))
-bot.delete_my_commands()
+# bot.delete_my_commands()
 
 GET_STATUS_BUTTON = {"text": "Що по світлу?", "code": "1"}
 SUBSCRIBE_BUTTON = {"text": "Підписатись", "code": "2"}
