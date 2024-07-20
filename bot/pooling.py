@@ -3,7 +3,7 @@ import time
 import requests
 
 
-def poolingStatus(endpoint, callback, interval=1):
+def poolingStatus(endpoint, callback, interval=60):
     isElectricityAvailable = None
 
     while True:
