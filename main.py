@@ -98,8 +98,6 @@ def stat():
 def status():
     current_time = datetime.utcnow() - timedelta(minutes=2)
 
-    difference_in_hours = get_db_time_difference_in_hours()
-
     table = db.Table('signal')
     res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
         Signal.timestamp > current_time
