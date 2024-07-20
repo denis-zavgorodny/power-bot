@@ -24,21 +24,21 @@ print('DB created')
 
 
 # CRUD operations
-def create_user(chat_id, user_name):
+def subscribe(chat_id, user_name):
     new_user = Subscription(chat_id=chat_id, user_name=user_name)
     session.add(new_user)
     session.commit()
 
 
-def get_all_users():
+def get_all_subscribers():
     return session.query(Subscription).all()
 
 
-def get_user_by_username(chat_id):
+def get_subscriber(chat_id):
     return session.query(Subscription).filter_by(chat_id=chat_id).first()
 
 
-def delete_user(chat_id):
+def unsubscribe(chat_id):
     user = session.query(Subscription).filter_by(chat_id=chat_id).first()
     if user:
         session.delete(user)

@@ -4,7 +4,7 @@ import requests
 from dotenv import dotenv_values
 from threading import Thread
 
-from db import create_user, get_all_users, get_user_by_username, delete_user
+from db import subscribe, get_all_subscribers, get_subscriber, unsubscribe
 from pooling import poolingStatus
 
 config = dotenv_values(".env")
@@ -30,7 +30,7 @@ UNSIBSCRIBE_MESSAGE = "Ми відписали вас. Ви більше не б
 
 
 def get_markup(chat_id):
-    subscription = get_user_by_username(chat_id)
+    subscription = get_subscriber(chat_id)
 
     first_button = types.KeyboardButton(GET_STATUS)
 
@@ -83,25 +83,25 @@ def get_status(message):
 
 
 @bot.message_handler(func=lambda message: message.text == SUBSCRIBE)
-def subscribe(message):
+def subscribe_user(message):
     chat_id = message.chat.id
     username = message.from_user.username
 
-    subscription = get_user_by_username(chat_id)
+    subscription = get_subscriber(chat_id)
 
     if subscription is None:
         print(subscription)
-        create_user(chat_id, username)
+        subscribe(chat_id, username)
         bot.send_message(chat_id, THANKS_FOR_SUBSCRIPTION, reply_markup=get_markup(chat_id))
     else:
         bot.send_message(chat_id, YOU_HAVE_SUBSCRIBED, reply_markup=get_markup(chat_id))
 
 
 @bot.message_handler(func=lambda message: message.text == UNSUBSCRIBE)
-def unsubscribe(message):
+def unsubscribe_user(message):
     chat_id = message.chat.id
 
-    if delete_user(chat_id):
+    if unsubscribe(chat_id):
         bot.send_message(chat_id, UNSIBSCRIBE_MESSAGE, reply_markup=get_markup(chat_id))
     else:
         bot.send_message(chat_id, "Щось пішло не так", reply_markup=get_markup(chat_id))
@@ -113,7 +113,7 @@ def notify(hasElectricuty):
     else:
         message = "Світло все :("
 
-    subscribed_users = get_all_users()
+    subscribed_users = get_all_subscribers()
 
     for user in subscribed_users:
         bot.send_message(user.chat_id, message)
