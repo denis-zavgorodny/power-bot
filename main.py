@@ -96,7 +96,7 @@ def stat():
 
 @app.route("/status")
 def status():
-    current_time = datetime.utcnow() - timedelta(minutes=2)
+    current_time = datetime.utcnow() - timedelta(minutes=5)
 
     table = db.Table('signal')
     res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
