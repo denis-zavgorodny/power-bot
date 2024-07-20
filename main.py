@@ -104,9 +104,8 @@ def status():
     res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
         Signal.timestamp > current_time
     )).fetchall()
-    signals = [{"timestamp": row[1] - timedelta(hours=difference_in_hours), "at": row[2] - timedelta(hours=difference_in_hours)} for row in res]
 
-    if len(signals) < 1:
+    if len(res) < 1:
         return "<div>NO POWER</div>", 404
 
     return "<div>POWER</div>", 200
