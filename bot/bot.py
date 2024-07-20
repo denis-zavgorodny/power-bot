@@ -28,6 +28,11 @@ YOU_HAVE_SUBSCRIBED = "Ви вже підписані"
 
 UNSIBSCRIBE_MESSAGE = "Ми відписали вас. Ви більше не будете отримувати сповіщення"
 
+ELECTRICITY_OK = "⚡ 💡 Світло є!"
+ELECTRICITY_FAIL = "🪫 Світла немає"
+ELECTRICITY_BACK = "⚡⚡⚡ Світло повернулось ⚡⚡⚡"
+ELECTRICITY_GONE = "🪫🪫🪫 Ох, як прикро 🪫🪫🪫 Схоже що електрика зникла"
+
 
 def get_markup(chat_id):
     subscription = get_subscriber(chat_id)
@@ -77,9 +82,9 @@ def get_status(message):
     response = requests.get(config.get("GET_STATUS_ENDPOINT"))
 
     if response.status_code == 200:
-        bot.reply_to(message, "💡💡💡 Світло є!")
+        bot.reply_to(message, ELECTRICITY_OK)
     else:
-        bot.reply_to(message, "🔦 Світла немає. Готуйте ліхтарик.")
+        bot.reply_to(message, ELECTRICITY_FAIL)
 
 
 @bot.message_handler(func=lambda message: message.text == SUBSCRIBE)
@@ -109,9 +114,9 @@ def unsubscribe_user(message):
 
 def notify(hasElectricuty):
     if hasElectricuty is True:
-        message = "Світло!"
+        message = ELECTRICITY_BACK
     else:
-        message = "Світло все :("
+        message = ELECTRICITY_GONE
 
     subscribed_users = get_all_subscribers()
 
