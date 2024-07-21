@@ -3,13 +3,12 @@ from telebot import types
 import requests
 from dotenv import dotenv_values
 from threading import Thread
-import logging
 
 from db import subscribe, get_all_subscribers, get_subscriber, unsubscribe
-from pooling import poolingStatus
+from logger import get_logger
+from pooling import pooling_status
 
-logger = logging.getLogger("power-telegram-bot")
-logging.basicConfig(filename="power-telegram-bot.log")
+logger = get_logger()
 
 config = dotenv_values(".env")
 bot = telebot.TeleBot(config.get("BOT_TOKEN"))
@@ -164,4 +163,4 @@ if __name__ == '__main__':
     bot_thread = Thread(target=start_bot)
     bot_thread.start()
 
-    poolingStatus(config.get("GET_STATUS_ENDPOINT"), notify)
+    pooling_status(config.get("GET_STATUS_ENDPOINT"), notify)
