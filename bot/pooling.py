@@ -10,7 +10,7 @@ from logger import get_logger
 logger = get_logger()
 
 
-def pooling_status(endpoint, callback, interval=3):
+def pooling_status(endpoint, callback, interval=60):
     isElectricityAvailable = None
 
     while True:
