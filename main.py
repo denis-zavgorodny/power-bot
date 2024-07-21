@@ -9,6 +9,7 @@ from sqlalchemy import Row
 
 from chart.main import plot
 from init import db, app
+from logger import get_logger
 from models.signal import Signal
 
 config = dotenv_values(".env")
@@ -46,20 +47,24 @@ def get_parameter_key_required(f):
 @app.route("/ping", methods=["POST"])
 @api_key_required
 def ping():
-    data = request.get_json()
+    logger = get_logger()
+    try:
+        data = request.get_json()
 
-    timestamp_str = data.get('timestamp')
-    if timestamp_str:
-        try:
-            timestamp = datetime.fromtimestamp(int(timestamp_str))
-            new_timestamp = Signal(timestamp=timestamp)
-            db.session.add(new_timestamp)
-            db.session.commit()
-            return jsonify({"message": "Timestamp received"}), 200
-        except ValueError:
-            return jsonify({"error": "Invalid timestamp format"}), 400
-    else:
-        return jsonify({"error": "No timestamp provided"}), 400
+        timestamp_str = data.get('timestamp')
+        if timestamp_str:
+            try:
+                timestamp = datetime.fromtimestamp(int(timestamp_str))
+                new_timestamp = Signal(timestamp=timestamp)
+                db.session.add(new_timestamp)
+                db.session.commit()
+                return jsonify({"message": "Timestamp received"}), 200
+            except ValueError:
+                return jsonify({"error": "Invalid timestamp format"}), 400
+        else:
+            return jsonify({"error": "No timestamp provided"}), 400
+    except Exception as e:
+        logger.error(f"HTTP /ping endpoint error: {e}")
 
 @app.route("/stat")
 @get_parameter_key_required
