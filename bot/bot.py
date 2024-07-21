@@ -155,7 +155,7 @@ def notify(hasElectricuty):
 
 # Start the bot polling in a separate thread
 def start_bot():
-    bot.polling()
+    bot.polling(non_stop=True)
 
 
 if __name__ == '__main__':
