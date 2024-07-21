@@ -3,9 +3,13 @@ from telebot import types
 import requests
 from dotenv import dotenv_values
 from threading import Thread
+import logging
 
 from db import subscribe, get_all_subscribers, get_subscriber, unsubscribe
 from pooling import poolingStatus
+
+logger = logging.getLogger("power-telegram-bot")
+logging.basicConfig(filename="power-telegram-bot.log")
 
 config = dotenv_values(".env")
 bot = telebot.TeleBot(config.get("BOT_TOKEN"))
@@ -104,12 +108,16 @@ def send_welcome(message):
 
 
 def get_status():
-    response = requests.get(config.get("GET_STATUS_ENDPOINT"))
+    try:
+        response = requests.get(config.get("GET_STATUS_ENDPOINT"))
+        res = response.json()
 
-    if response.status_code == 200:
-        return ELECTRICITY_OK
-    else:
-        return ELECTRICITY_FAIL
+        if res["hasElectricity"] is True:
+            return ELECTRICITY_OK
+        else:
+            return ELECTRICITY_FAIL
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Get status request failed: {e}")
 
 
 def subscribe_user(message):

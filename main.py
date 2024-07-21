@@ -96,7 +96,7 @@ def stat():
 
 @app.route("/status")
 def status():
-    current_time = datetime.utcnow() - timedelta(minutes=5)
+    current_time = datetime.now() - timedelta(minutes=5)
 
     table = db.Table('signal')
     res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
@@ -104,9 +104,9 @@ def status():
     )).fetchall()
 
     if len(res) < 1:
-        return "<div>NO POWER</div>", 404
+        return jsonify({"hasElectricity": False}), 200
 
-    return "<div>POWER</div>", 200
+    return jsonify({"hasElectricity": True}), 200
 
 
 def get_time_difference_in_hours():
