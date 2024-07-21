@@ -45,17 +45,17 @@ ELECTRICITY_GONE = "🪫🪫🪫 Ох, як прикро 🪫🪫🪫 Схоже
 
 
 def get_markup(chat_id):
-    subscription = get_subscriber(chat_id)
+    # subscription = get_subscriber(chat_id)
 
     first_button = types.InlineKeyboardButton(text=GET_STATUS_BUTTON["text"], callback_data=GET_STATUS_BUTTON["code"])
 
-    if subscription is None:
-        second_button = types.InlineKeyboardButton(text=SUBSCRIBE_BUTTON["text"], callback_data=SUBSCRIBE_BUTTON["code"])
-    else:
-        second_button = types.InlineKeyboardButton(text=UNSUBSCRIBE_BUTTON["text"], callback_data=UNSUBSCRIBE_BUTTON["code"])
+    # if subscription is None:
+    #     second_button = types.InlineKeyboardButton(text=SUBSCRIBE_BUTTON["text"], callback_data=SUBSCRIBE_BUTTON["code"])
+    # else:
+    #     second_button = types.InlineKeyboardButton(text=UNSUBSCRIBE_BUTTON["text"], callback_data=UNSUBSCRIBE_BUTTON["code"])
 
     markup = types.InlineKeyboardMarkup()
-    markup.row(first_button, second_button)
+    markup.row(first_button)
 
     return markup
 
