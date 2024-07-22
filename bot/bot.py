@@ -29,6 +29,11 @@ greating = """
 А ще я можу відправляти вам повідомлення коли світло зʼявляється чи зникає. Якщо ви хочете отримувати повідомлення оберіть пункт "Підписатись"
 або відправьте команду /subscribe (щоб перестати отримувати повідомлення /unsubscribe)
 
+Команди:
+/start – отримати підказку
+/status – дізнатись чи є світло
+/subscribe –підписатись на автоматичне сповіщення
+/unsubscribe – відписатись від автоматичного сповіщення
 
 """
 
@@ -152,7 +157,11 @@ def notify(hasElectricuty):
     subscribed_users = get_all_subscribers()
 
     for user in subscribed_users:
-        bot.send_message(user.chat_id, message)
+        try:
+            bot.send_message(user.chat_id, message)
+        except Exception as e:
+            logger.error(e)
+
 
 
 # Start the bot polling in a separate thread
