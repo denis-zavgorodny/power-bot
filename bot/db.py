@@ -10,7 +10,7 @@ class Subscription(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     chat_id = Column(Integer, unique=True, nullable=False)
-    user_name = Column(String, unique=True, nullable=False)
+    user_name = Column(String, unique=False, nullable=True)
 
 # Create all tables in the engine. This is equivalent to "Create Table" statements in raw SQL.
 Base.metadata.create_all(engine)
