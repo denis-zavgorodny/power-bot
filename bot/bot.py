@@ -160,7 +160,7 @@ def notify(hasElectricuty):
         try:
             bot.send_message(user.chat_id, message)
         except Exception as e:
-            logger.error(e)
+            logger.error(f"Notification error for chat #{user.chat_id}: {e}")
 
 
 
