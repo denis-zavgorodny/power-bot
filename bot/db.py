@@ -25,7 +25,11 @@ print('DB created')
 
 # CRUD operations
 def subscribe(chat_id, user_name):
-    new_user = Subscription(chat_id=chat_id, user_name=user_name)
+    if user_name is None:
+        new_user = Subscription(chat_id=chat_id, user_name="unknown")
+    else:
+        new_user = Subscription(chat_id=chat_id, user_name=user_name)
+
     session.add(new_user)
     session.commit()
 
