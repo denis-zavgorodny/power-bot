@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from typing import Sequence
 
+import pytz
 from dotenv import dotenv_values
 from flask import request, jsonify, send_file
 from sqlalchemy import Row
@@ -11,6 +12,7 @@ from chart.main import plot
 from init import db, app
 from logger import get_logger
 from models.signal import Signal
+from yasno.api import YasnoAPI
 
 config = dotenv_values(".env")
 
@@ -127,6 +129,24 @@ def status():
 
     return jsonify({"hasElectricity": True}), 200
 
+@app.route("/calendar")
+def calendar():
+    yasno = YasnoAPI()
+    event = yasno.get_current_event(at = datetime.now())
+    default_timezone = pytz.timezone("Europe/Kyiv")
+
+    event_state = event.get("SUMMARY")
+    event_start = event.decoded("DTSTART")
+    event_end = event.decoded("DTEND")  # + timedelta(hours=3)
+    current_time = datetime.now()
+    diff_left = event_end - default_timezone.localize(current_time)
+
+    return {
+        "event_state": event_state,
+        "event_start": event_start.strftime("%Y-%m-%d %H:%M:%S"),
+        "event_end": event_end.strftime("%Y-%m-%d %H:%M:%S"),
+        "diff": diff_left.seconds,
+    }, 200
 
 def get_time_difference_in_hours():
     ###
