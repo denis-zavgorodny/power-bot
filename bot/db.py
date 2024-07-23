@@ -26,7 +26,7 @@ print('DB created')
 # CRUD operations
 def subscribe(chat_id, user_name):
     if user_name is None:
-        new_user = Subscription(chat_id=chat_id, user_name="unknown")
+        new_user = Subscription(chat_id=chat_id, user_name=f"unknown_{chat_id}")
     else:
         new_user = Subscription(chat_id=chat_id, user_name=user_name)
 
