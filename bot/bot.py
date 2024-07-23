@@ -128,24 +128,31 @@ def get_status():
 
 def subscribe_user(message):
     chat_id = message.chat.id
-    username = message.from_user.username
+    try:
+        chat_id = message.chat.id
+        username = message.from_user.username
 
-    subscription = get_subscriber(chat_id)
+        subscription = get_subscriber(chat_id)
 
-    if subscription is None:
-        subscribe(chat_id, username)
-        return THANKS_FOR_SUBSCRIPTION
-    else:
-        return YOU_HAVE_SUBSCRIBED
+        if subscription is None:
+            subscribe(chat_id, username)
+            return THANKS_FOR_SUBSCRIPTION
+        else:
+            return YOU_HAVE_SUBSCRIBED
+    except Exception as e:
+        logger.error(f"Subscribe request failed for chat_id #{chat_id}: {e}")
 
 
 def unsubscribe_user(message):
     chat_id = message.chat.id
 
-    if unsubscribe(chat_id):
-        return UNSIBSCRIBE_MESSAGE
-    else:
-        return UNSIBSCRIBE_MESSAGE_NO_USER
+    try:
+        if unsubscribe(chat_id):
+            return UNSIBSCRIBE_MESSAGE
+        else:
+            return UNSIBSCRIBE_MESSAGE_NO_USER
+    except Exception as e:
+        logger.error(f"Unsubscribe request failed for chat_id #{chat_id}: {e}")
 
 
 def notify(hasElectricuty):
