@@ -39,6 +39,8 @@ greating = """
 
 THANKS_FOR_SUBSCRIPTION = "Дякую що підписалися"
 
+SUBSCRIPTION_WITH_ERROR = "Дякую що підписалися. Щось пішло не так, але ми спробуємо це виправити і підписати вас"
+
 YOU_HAVE_SUBSCRIBED = "Ви вже підписані"
 
 UNSIBSCRIBE_MESSAGE = "Ми відписали вас. Ви більше не будете отримувати сповіщення"
@@ -141,6 +143,7 @@ def subscribe_user(message):
             return YOU_HAVE_SUBSCRIBED
     except Exception as e:
         logger.error(f"Subscribe request failed for chat_id #{chat_id}: {e}")
+        return SUBSCRIPTION_WITH_ERROR
 
 
 def unsubscribe_user(message):
