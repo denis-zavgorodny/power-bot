@@ -19,13 +19,19 @@ class YasnoAPI:
 
     def get_current_event(self, at: datetime.datetime) -> dict | None:
         events = self.ical.at(at)
+
         if events is None:
+            return None
+        elif len(events) == 0:
             return None
         return events[0]
 
     def next_off(self):
         events = self.ical.between(start=datetime.datetime.now(), stop=datetime.datetime.now() + datetime.timedelta(days=1))
+
         if events is None:
+            return None
+        elif len(events) == 0:
             return None
 
         filtered = list(filter(lambda x: x.get("SUMMARY") == "off", events))

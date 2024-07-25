@@ -137,7 +137,7 @@ def status():
             next_date = currentState.decoded("DTEND").strftime("%H:%M")
             message = f"Світло все ще можуть вимкнути до {next_date}"
         elif len(res) < 1 and currentState is None:
-            message = "Схоже щось пішло не по плану"
+            message = "Планового відключення не мало б бути"
         else:
             next_date = currentState.decoded("DTEND").strftime("%H:%M")
             message = f"Світло має повернутись в {next_date}"
@@ -157,7 +157,7 @@ def status():
 
         return jsonify({
             "hasElectricity": True,
-            "message": ""
+            "message": f"{e}"
         }), 200
 
 
