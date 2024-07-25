@@ -12,7 +12,7 @@ from chart.main import plot
 from init import db, app
 from logger import get_logger
 from models.signal import Signal
-from yasno.api import YasnoAPI
+from yasno.api import YasnoAPI, OFF
 
 config = dotenv_values(".env")
 
@@ -117,35 +117,76 @@ def stat():
 
 @app.route("/status")
 def status():
-    current_time = datetime.now() - timedelta(minutes=5)
+    logger = get_logger()
+    try:
+        yasno = YasnoAPI()
+        currentState = yasno.get_current_event(at = datetime.now())
 
-    table = db.Table('signal')
-    res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
-        Signal.timestamp > current_time
-    )).fetchall()
+        current_time = datetime.now() - timedelta(minutes=5)
 
-    if len(res) < 1:
-        return jsonify({"hasElectricity": False}), 200
+        table = db.Table('signal')
+        res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
+            Signal.timestamp > current_time
+        )).fetchall()
 
-    return jsonify({"hasElectricity": True}), 200
+        if len(res) > 0 and currentState is None:
+            nextState = yasno.next_off()
+            next_date = nextState.decoded("DTSTART").strftime("%Y-%m-%d %H:%M:%S")
+            message = f"наступне відключення: {next_date}"
+        elif len(res) > 0 and currentState is not None:
+            next_date = currentState.decoded("DTEND").strftime("%H:%M")
+            message = f"Світло все ще можуть вимкнути до {next_date}"
+        elif len(res) < 1 and currentState is None:
+            message = "Схоже щось пішло не по плану"
+        else:
+            next_date = currentState.decoded("DTEND").strftime("%H:%M")
+            message = f"Світло має повернутись в {next_date}"
+
+        if len(res) < 1:
+            return jsonify({
+                "hasElectricity": False,
+                "message": message
+            }), 200
+
+        return jsonify({
+            "hasElectricity": True,
+            "message": message
+        }), 200
+    except Exception as e:
+        logger.error(f"HTTP /status endpoint error: {e}")
+
+        return jsonify({
+            "hasElectricity": True,
+            "message": f"Error: {e}"
+        }), 200
+
 
 @app.route("/calendar")
 def calendar():
     yasno = YasnoAPI()
-    event = yasno.get_current_event(at = datetime.now())
-    default_timezone = pytz.timezone("Europe/Kyiv")
+    currentState = yasno.get_current_event(at = datetime.now())
 
-    event_state = event.get("SUMMARY")
-    event_start = event.decoded("DTSTART")
-    event_end = event.decoded("DTEND")  # + timedelta(hours=3)
-    current_time = datetime.now()
-    diff_left = event_end - default_timezone.localize(current_time)
+    if currentState is None:
+        next = yasno.next_off()
+
+        return {
+            "event_state": next.get("SUMMARY"),
+            "event_start": next.decoded("DTSTART").strftime("%Y-%m-%d %H:%M:%S"),
+            "event_end": next.decoded("DTEND").strftime("%Y-%m-%d %H:%M:%S"),
+        }, 200
+
+    # if currentState.get("SUMMARY") == "off":
+    #     next = yasno.next_off()
+
+
+    event_state = currentState.get("SUMMARY")
+    event_start = currentState.decoded("DTSTART")
+    event_end = currentState.decoded("DTEND")
 
     return {
         "event_state": event_state,
         "event_start": event_start.strftime("%Y-%m-%d %H:%M:%S"),
         "event_end": event_end.strftime("%Y-%m-%d %H:%M:%S"),
-        "diff": diff_left.seconds,
     }, 200
 
 def get_time_difference_in_hours():
