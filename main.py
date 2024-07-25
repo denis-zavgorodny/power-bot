@@ -157,7 +157,7 @@ def status():
 
         return jsonify({
             "hasElectricity": True,
-            "message": f"Error: {e}"
+            "message": ""
         }), 200
 
 
