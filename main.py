@@ -13,6 +13,7 @@ from init import db, app
 from logger import get_logger
 from models.signal import Signal
 from yasno.api import YasnoAPI, OFF
+from yasno.power_state import Power
 
 config = dotenv_values(".env")
 
@@ -120,7 +121,7 @@ def status():
     logger = get_logger()
     try:
         yasno = YasnoAPI()
-        currentState = yasno.get_current_event(at = datetime.now())
+        power_status = Power(yasno)
 
         current_time = datetime.now() - timedelta(minutes=5)
 
@@ -129,36 +130,12 @@ def status():
             Signal.timestamp > current_time
         )).fetchall()
 
-        if len(res) > 0 and currentState is None:
-            nextState = yasno.next_off()
-            next_date = nextState.decoded("DTSTART").strftime("%Y-%m-%d %H:%M:%S")
-            message = f"наступне відключення: {next_date}"
-        elif len(res) > 0 and currentState is not None:
-            next_date = currentState.decoded("DTEND").strftime("%H:%M")
-            message = f"Світло все ще можуть вимкнути до {next_date}"
-        elif len(res) < 1 and currentState is None:
-            message = "Планового відключення не мало б бути"
-        else:
-            next_date = currentState.decoded("DTEND").strftime("%H:%M")
-            message = f"Світло має повернутись в {next_date}"
+        return jsonify(power_status.predict(len(res) > 0)), 200
 
-        if len(res) < 1:
-            return jsonify({
-                "hasElectricity": False,
-                "message": message
-            }), 200
-
-        return jsonify({
-            "hasElectricity": True,
-            "message": message
-        }), 200
     except Exception as e:
         logger.error(f"HTTP /status endpoint error: {e}")
+        raise e
 
-        return jsonify({
-            "hasElectricity": True,
-            "message": f"{e}"
-        }), 200
 
 
 @app.route("/calendar")
