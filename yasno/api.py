@@ -38,10 +38,8 @@ class YasnoAPI:
         self.schedule = None
 
         if autoload is True:
-            print("autoload in On")
             self.schedule = self.__load_calendar()
         else:
-            print("autoload is Off")
             peth_to_calendar = Path(__file__).parent.parent / config.get("YASNO_ICAL_PATH")
             with peth_to_calendar.open() as file:
                 self.ical = recurring_ical_events.of(Calendar.from_ical(file.read()))
