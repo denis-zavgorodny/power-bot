@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import recurring_ical_events
 
 from icalendar import Calendar
@@ -17,7 +17,7 @@ class YasnoAPI:
         with peth_to_calendar.open() as file:
             self.ical = recurring_ical_events.of(Calendar.from_ical(file.read()))
 
-    def get_current_event(self, at: datetime.datetime) -> dict | None:
+    def get_current_event(self, at: datetime) -> dict | None:
         events = self.ical.at(at)
 
         if events is None:
@@ -27,7 +27,7 @@ class YasnoAPI:
         return events[0]
 
     def next_off(self):
-        events = self.ical.between(start=datetime.datetime.now(), stop=datetime.datetime.now() + datetime.timedelta(days=1))
+        events = self.ical.between(start=datetime.now(), stop=datetime.now() + timedelta(days=1))
 
         if events is None:
             return None
