@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import recurring_ical_events
 import requests
+import requests_cache
 
 from icalendar import Calendar, Event
 from pathlib import Path
@@ -20,6 +21,8 @@ END_OF_DAY = 24
 START = "DTSTART"
 END = "DTEND"
 KIND = "SUMMARY"
+
+requests_cache.install_cache('calendar_cache', expire_after=3600)
 
 #
 # The implementation has been copied from HA integration:
