@@ -120,7 +120,7 @@ def stat():
 def status():
     logger = get_logger()
     try:
-        yasno = YasnoAPI(autoload=False)
+        yasno = YasnoAPI(autoload=True)
         power_status = Power(yasno)
 
         current_time = datetime.now() - timedelta(minutes=5)
@@ -140,7 +140,7 @@ def status():
 
 @app.route("/calendar")
 def calendar():
-    yasno = YasnoAPI(autoload=False)
+    yasno = YasnoAPI(autoload=True)
     currentState = yasno.get_current_event(at = datetime.now())
 
     if currentState is None:
