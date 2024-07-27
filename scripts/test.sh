@@ -1,3 +1,3 @@
 # bash
-
-python -m unittest discover test
+pytest
+#python -m unittest discover test
