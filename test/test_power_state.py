@@ -43,6 +43,20 @@ class Test(unittest.TestCase):
             {'has_electricity': True, 'message': 'наступне відключення: 2024-07-22 18:00'}
         )
 
+    @patch('yasno.api.datetime')
+    @patch('yasno.power_state.datetime')
+    def test_power_state_when_power_and_it_is_not_expected(self, mock_datetime, mock_api_datetime):
+        # when
+        power = Power(calendar=YasnoAPI())
+        mock_datetime.now.return_value = datetime(2024, 7, 22, 19, 0, 0)
+        mock_api_datetime.now.return_value = datetime(2024, 7, 22, 19, 0, 0)
+
+        # then
+        self.assertEqual(
+            power.predict(has_electricity=True),
+            {'has_electricity': True, 'message': 'Світло все ще можуть вимкнути до 22:00'}
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
