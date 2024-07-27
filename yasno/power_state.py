@@ -24,8 +24,6 @@ class Power:
         currentState = self.calendar.get_current_event(at=datetime.now())
         if has_electricity is True and currentState is None:
             nextState = self.calendar.next_off()
-            print(datetime.now())
-            print(nextState)
             next_date = nextState.decoded(START).strftime("%Y-%m-%d %H:%M")
             message = f"наступне відключення: {next_date}"
         elif has_electricity is True and currentState is not None:
