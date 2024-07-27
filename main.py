@@ -189,4 +189,4 @@ def get_db_time_difference_in_hours():
     return int(config.get("DB_TIME_ZONE_DIFF"))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=config.get("PORT"))
