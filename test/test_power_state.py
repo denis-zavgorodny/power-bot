@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
         # then
         self.assertEqual(
             power.predict(has_electricity=True),
-            {'has_electricity': True, 'message': 'наступне відключення: 2024-07-22 18:00'}
+            {'has_electricity': True, 'message': 'Наступне відключення: 2024-07-22 18:00'}
         )
 
     @patch('yasno.api.datetime')
