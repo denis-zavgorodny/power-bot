@@ -1,4 +1,6 @@
+attrs==23.2.0
 blinker==1.8.2
+cattrs==23.2.3
 certifi==2024.7.4
 charset-normalizer==3.3.2
 click==8.1.7
@@ -20,6 +22,7 @@ numpy==2.0.0
 packaging==24.1
 pandas==2.2.2
 pillow==10.4.0
+platformdirs==4.2.2
 pyparsing==3.1.2
 pyTelegramBotAPI==4.21.0
 python-dateutil==2.9.0.post0
@@ -27,6 +30,7 @@ python-dotenv==1.0.1
 pytz==2024.1
 recurring-ical-events==2.2.3
 requests==2.32.3
+requests-cache==1.2.1
 six==1.16.0
 SQLAlchemy==2.0.31
 telebot==0.0.5
@@ -34,6 +38,7 @@ typing_extensions==4.12.2
 tzdata==2024.1
 tzlocal==5.2
 upgrade-requirements==1.7.0
+url-normalize==1.4.3
 urllib3==2.2.2
 Werkzeug==3.0.3
 x-wr-timezone==0.0.7
