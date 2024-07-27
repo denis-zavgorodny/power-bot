@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Dict
 
 from yasno.api import YasnoAPI
 
@@ -10,13 +11,14 @@ class Power:
     def __init__(self, calendar: YasnoAPI):
         self.calendar = calendar
 
-    def predict(self, has_electricity: bool):
+    class Prediction(Dict):
+        hasElectricity: bool
+        message: str
+
+    def predict(self, has_electricity: bool) -> Prediction:
         message = self.__get_message(has_electricity)
 
-        return {
-            "hasElectricity": has_electricity,
-            "message": message
-        }
+        return self.Prediction(has_electricity=has_electricity, message=message)
 
     def __get_message(self, has_electricity: bool) -> str:
         currentState = self.calendar.get_current_event(at=datetime.now())
