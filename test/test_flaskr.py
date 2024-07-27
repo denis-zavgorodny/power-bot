@@ -18,7 +18,6 @@ class TestApp(unittest.TestCase):
 
     @classmethod
     def setup_mock_data(cls):
-
         signal = Signal(timestamp=datetime.now())
         db.session.add(signal)
         db.session.commit()
