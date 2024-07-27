@@ -8,7 +8,7 @@ class Test(unittest.TestCase):
     @patch('yasno.power_state.datetime')
     def test_power_state_when_no_power_in_dark_zone_and_it_is_expected(self, mock_datetime):
         # when
-        power = Power(calendar=YasnoAPI())
+        power = Power(calendar=YasnoAPI(autoload=False))
         mock_datetime.now.return_value = datetime(2024, 7, 22, 19, 0, 0)
 
         # then
@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
     @patch('yasno.power_state.datetime')
     def test_power_state_when_no_power_in_grey_zone_and_it_is_expected(self, mock_datetime):
         # when
-        power = Power(calendar=YasnoAPI())
+        power = Power(calendar=YasnoAPI(autoload=False))
         mock_datetime.now.return_value = datetime(2024, 7, 22, 23, 0, 0)
 
         # then
@@ -32,7 +32,7 @@ class Test(unittest.TestCase):
     @patch('yasno.power_state.datetime')
     def test_power_state_when_no_power_and_it_is_not_expected(self, mock_datetime):
         # when
-        power = Power(calendar=YasnoAPI())
+        power = Power(calendar=YasnoAPI(autoload=False))
         mock_datetime.now.return_value = datetime(2024, 7, 22, 17, 0, 0)
 
         # then
@@ -45,7 +45,7 @@ class Test(unittest.TestCase):
     @patch('yasno.power_state.datetime')
     def test_power_state_when_power_and_it_is_expected(self, mock_datetime, mock_api_datetime):
         # when
-        power = Power(calendar=YasnoAPI())
+        power = Power(calendar=YasnoAPI(autoload=False))
         mock_datetime.now.return_value = datetime(2024, 7, 22, 16, 0, 0)
         mock_api_datetime.now.return_value = datetime(2024, 7, 22, 16, 0, 0)
 
@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
     @patch('yasno.power_state.datetime')
     def test_power_state_when_power_and_it_is_not_expected(self, mock_datetime, mock_api_datetime):
         # when
-        power = Power(calendar=YasnoAPI())
+        power = Power(calendar=YasnoAPI(autoload=False))
         mock_datetime.now.return_value = datetime(2024, 7, 22, 19, 0, 0)
         mock_api_datetime.now.return_value = datetime(2024, 7, 22, 19, 0, 0)
 

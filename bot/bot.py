@@ -91,7 +91,7 @@ def get_status():
         response = requests.get(config.get("GET_STATUS_ENDPOINT"))
         res = response.json()
 
-        if res["hasElectricity"] is True:
+        if res["has_electricity"] is True:
             return ELECTRICITY_OK.format(res["message"])
         else:
             return ELECTRICITY_FAIL.format(res["message"])
@@ -130,8 +130,8 @@ def unsubscribe_user(message):
         logger.error(f"Unsubscribe request failed for chat_id #{chat_id}: {e}")
 
 
-def notify(hasElectricuty):
-    if hasElectricuty is True:
+def notify(has_electricity: bool):
+    if has_electricity is True:
         message = ELECTRICITY_BACK
     else:
         message = ELECTRICITY_GONE

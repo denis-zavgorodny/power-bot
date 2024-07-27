@@ -20,7 +20,7 @@ def pooling_status(endpoint, callback, interval=30):
             response.raise_for_status()
             res = response.json()
 
-            if res["hasElectricity"] is True:
+            if res["has_electricity"] is True:
                 if isElectricityAvailable is False:
                     callback(True)
 

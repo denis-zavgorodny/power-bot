@@ -15,7 +15,7 @@ class Power:
         self.calendar = calendar
 
     class Prediction(Dict):
-        hasElectricity: bool
+        has_electricity: bool
         message: str
 
     def predict(self, has_electricity: bool) -> Prediction:

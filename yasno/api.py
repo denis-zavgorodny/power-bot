@@ -11,11 +11,14 @@ MAYBE = "maybe"
 OFF = "off"
 
 class YasnoAPI:
-    def __init__(self):
+    def __init__(self, autoload: bool = True):
         self.ical = None
-        peth_to_calendar = Path(__file__).parent.parent / config.get("YASNO_ICAL_PATH")
-        with peth_to_calendar.open() as file:
-            self.ical = recurring_ical_events.of(Calendar.from_ical(file.read()))
+        if autoload is True:
+            self.ical = self.__load_calendar()
+        else:
+            peth_to_calendar = Path(__file__).parent.parent / config.get("YASNO_ICAL_PATH")
+            with peth_to_calendar.open() as file:
+                self.ical = recurring_ical_events.of(Calendar.from_ical(file.read()))
 
     def get_current_event(self, at: datetime) -> dict | None:
         events = self.ical.at(at)
@@ -37,4 +40,5 @@ class YasnoAPI:
         filtered = list(filter(lambda x: x.get("SUMMARY") == "off", events))
         return filtered[0]
 
-
+    def __load_calendar(self):
+        return None
