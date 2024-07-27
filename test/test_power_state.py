@@ -6,7 +6,7 @@ from yasno.power_state import Power
 
 class Test(unittest.TestCase):
     @patch('yasno.power_state.datetime')
-    def test_power_state_when_no_power_and_it_is_expected(self, mock_datetime):
+    def test_power_state_when_no_power_in_dark_zone_and_it_is_expected(self, mock_datetime):
         # when
         power = Power(calendar=YasnoAPI())
         mock_datetime.now.return_value = datetime(2024, 7, 22, 19, 0, 0)
@@ -14,7 +14,19 @@ class Test(unittest.TestCase):
         # then
         self.assertEqual(
             power.predict(has_electricity=False),
-            {'has_electricity': False, 'message': 'Світло має повернутись в 22:00'}
+            {'has_electricity': False, 'message': 'Світло може повернутись в 22:00 якщо не буде застосовано світло-сірі зони'}
+        )
+
+    @patch('yasno.power_state.datetime')
+    def test_power_state_when_no_power_in_grey_zone_and_it_is_expected(self, mock_datetime):
+        # when
+        power = Power(calendar=YasnoAPI())
+        mock_datetime.now.return_value = datetime(2024, 7, 22, 23, 0, 0)
+
+        # then
+        self.assertEqual(
+            power.predict(has_electricity=False),
+            {'has_electricity': False, 'message': 'Світло має повернутись до 01:00. Зараз діє світло-сіра зона, світло можуть ввімкнути в будь-який момент'}
         )
 
     @patch('yasno.power_state.datetime')

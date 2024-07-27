@@ -5,6 +5,9 @@ from yasno.api import YasnoAPI
 
 START = "DTSTART"
 END = "DTEND"
+KIND = "SUMMARY"
+GREY = "maybe"
+DARK = "off"
 
 
 class Power:
@@ -32,7 +35,17 @@ class Power:
         elif has_electricity is False and currentState is None:
             message = "Планового відключення не мало б бути"
         else:
-            next_date = currentState.decoded(END).strftime("%H:%M")
-            message = f"Світло має повернутись в {next_date}"
+            if self.__is_dark_zone(currentState):
+                next_date = currentState.decoded(END).strftime("%H:%M")
+                message = f"Світло може повернутись в {next_date} якщо не буде застосовано світло-сірі зони"
+            else:
+                next_date = currentState.decoded(END).strftime("%H:%M")
+                message = f"Світло має повернутись до {next_date}. Зараз діє світло-сіра зона, світло можуть ввімкнути в будь-який момент"
 
         return message
+
+    def __is_dark_zone(self, state: Dict) -> bool:
+        return state.get(KIND) == DARK
+
+    def __is_grey_zone(self, state: Dict) -> bool:
+        return state.get(KIND) == GREY
