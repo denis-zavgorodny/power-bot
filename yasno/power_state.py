@@ -21,8 +21,9 @@ class Power:
         return self.Prediction(has_electricity=has_electricity, message=message)
 
     def __get_message(self, has_electricity: bool) -> str:
+        print(datetime.now())
         currentState = self.calendar.get_current_event(at=datetime.now())
-
+        print(currentState)
         if has_electricity is True and currentState is None:
             nextState = self.calendar.next_off()
             next_date = nextState.decoded(START).strftime("%Y-%m-%d %H:%M:%S")
