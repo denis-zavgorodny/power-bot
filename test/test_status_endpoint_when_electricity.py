@@ -9,12 +9,12 @@ from pathlib import Path
 from models.signal import Signal
 
 
-class TestApi(unittest.TestCase):
+class TestStatusEndpointWhenElectricity(unittest.TestCase):
     __dark_zone_datetime = datetime(2024, 7, 29, 3, 0, 0)
     __grey_zone_datetime = datetime(2024, 7, 29, 6, 0, 0)
     __white_zone_datetime = datetime(2024, 7, 29, 9, 0, 0)
 
-    __last_signal_time = datetime(2024, 7, 29, 2, 0, 0)
+    __last_signal_time = datetime(2024, 7, 29, 9, 0, 0)
 
     @classmethod
     def setUpClass(cls):
@@ -40,7 +40,7 @@ class TestApi(unittest.TestCase):
     @patch('main.datetime')
     @patch('yasno.power_state.datetime')
     @patch('yasno.api.datetime')
-    def test_status_endpoint_when_dark_zone(self, yasno_api_mock_datetime, yasno_power_mock_datetime, main_mock_datetime, mocked_request):
+    def test_when_dark_zone(self, yasno_api_mock_datetime, yasno_power_mock_datetime, main_mock_datetime, mocked_request):
         # when
         with open(Path(__file__).parent / "__mocks__/http_calendar.json") as f:
             mocked_data = json.load(f)
@@ -59,15 +59,15 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("has_electricity", response.json)
         self.assertEqual({
-            "has_electricity": False,
-            "message": "Світло може повернутись в 05:00 якщо не буде застосовано світло-сірі зони"
+            "has_electricity": True,
+            "message": "Світло все ще можуть вимкнути до 05:00"
         } ,response.json)
 
     @patch('yasno.api.requests')
     @patch('main.datetime')
     @patch('yasno.power_state.datetime')
     @patch('yasno.api.datetime')
-    def test_status_endpoint_when_grey_zone(self, yasno_api_mock_datetime, yasno_power_mock_datetime, main_mock_datetime, mocked_request):
+    def test_when_grey_zone(self, yasno_api_mock_datetime, yasno_power_mock_datetime, main_mock_datetime, mocked_request):
         # when
         with open(Path(__file__).parent / "__mocks__/http_calendar.json") as f:
             mocked_data = json.load(f)
@@ -86,15 +86,15 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("has_electricity", response.json)
         self.assertEqual({
-            "has_electricity": False,
-            "message": "Світло має повернутись до 08:00. Зараз діє світло-сіра зона, світло можуть ввімкнути в будь-який момент"
+            "has_electricity": True,
+            "message": "Світло все ще можуть вимкнути до 08:00"
         } ,response.json)
 
     @patch('yasno.api.requests')
     @patch('main.datetime')
     @patch('yasno.power_state.datetime')
     @patch('yasno.api.datetime')
-    def test_status_endpoint_when_white_zone(self, yasno_api_mock_datetime, yasno_power_mock_datetime, main_mock_datetime, mocked_request):
+    def test_when_white_zone(self, yasno_api_mock_datetime, yasno_power_mock_datetime, main_mock_datetime, mocked_request):
         # when
         with open(Path(__file__).parent / "__mocks__/http_calendar.json") as f:
             mocked_data = json.load(f)
@@ -113,8 +113,8 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("has_electricity", response.json)
         self.assertEqual({
-            "has_electricity": False,
-            "message": "Планового відключення не мало б бути"
+            "has_electricity": True,
+            "message": "Наступне відключення: 2024-07-29 10:00"
         } ,response.json)
 
 if __name__ == '__main__':
