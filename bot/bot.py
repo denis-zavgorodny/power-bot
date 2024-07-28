@@ -6,7 +6,11 @@ from threading import Thread
 
 from db import subscribe, get_all_subscribers, get_subscriber, unsubscribe
 from logger import get_logger
+
 from pooling import pooling_status
+from text_messages import GREATING_TEXT, ELECTRICITY_OK, ELECTRICITY_FAIL, ELECTRICITY_UNKNOWN, THANKS_FOR_SUBSCRIPTION, \
+    YOU_HAVE_SUBSCRIBED, SUBSCRIPTION_WITH_ERROR, UNSIBSCRIBE_MESSAGE, UNSIBSCRIBE_MESSAGE_NO_USER, ELECTRICITY_BACK, \
+    ELECTRICITY_GONE
 
 logger = get_logger()
 
@@ -17,39 +21,6 @@ bot = telebot.TeleBot(config.get("BOT_TOKEN"))
 GET_STATUS_BUTTON = {"text": "Що по світлу?", "code": "1"}
 SUBSCRIBE_BUTTON = {"text": "Підписатись", "code": "2"}
 UNSUBSCRIBE_BUTTON = {"text": "Відписатись", "code": "3"}
-
-greating = """
-Вітаю! 
-Я можу дізнаватись для вас чи є світло в домі. Я отримую данні з електромережі 
-однієї із квартир в домі майже в реальному часі. 
-
-Іноді я можу помилятись. Чому це може трапитись? Тому що інформація про наявність світла передається інтернетом. 
-Технічно неможливо відрізнити відсутність інтернета та відсутність світла.
-
-А ще я можу відправляти вам повідомлення коли світло зʼявляється чи зникає. Якщо ви хочете отримувати повідомлення оберіть пункт "Підписатись"
-або відправьте команду /subscribe (щоб перестати отримувати повідомлення /unsubscribe)
-
-Команди:
-/start – отримати підказку
-/status – дізнатись чи є світло
-/subscribe –підписатись на автоматичне сповіщення
-/unsubscribe – відписатись від автоматичного сповіщення
-
-"""
-
-THANKS_FOR_SUBSCRIPTION = "Дякую що підписалися"
-
-SUBSCRIPTION_WITH_ERROR = "Дякую що підписалися. Щось пішло не так, але ми спробуємо це виправити і підписати вас"
-
-YOU_HAVE_SUBSCRIBED = "Ви вже підписані"
-
-UNSIBSCRIBE_MESSAGE = "Ми відписали вас. Ви більше не будете отримувати сповіщення"
-UNSIBSCRIBE_MESSAGE_NO_USER = "Схоже що ми вас вже відписали. Ви більше не будете отримувати сповіщення"
-
-ELECTRICITY_OK = "⚡ 💡 Світло є!"
-ELECTRICITY_FAIL = "🪫 Світла немає"
-ELECTRICITY_BACK = "⚡⚡⚡ Світло повернулось ⚡⚡⚡"
-ELECTRICITY_GONE = "🪫🪫🪫 Ох, як прикро 🪫🪫🪫 Схоже що електрика зникла"
 
 
 def get_markup(chat_id):
@@ -72,7 +43,7 @@ def get_markup(chat_id):
 def send_welcome(message):
     chat_id = message.chat.id
 
-    bot.reply_to(message, greating, reply_markup=get_markup(chat_id))
+    bot.reply_to(message, GREATING_TEXT, reply_markup=get_markup(chat_id))
 
 
 @bot.message_handler(commands=['menu'])
@@ -120,12 +91,13 @@ def get_status():
         response = requests.get(config.get("GET_STATUS_ENDPOINT"))
         res = response.json()
 
-        if res["hasElectricity"] is True:
-            return ELECTRICITY_OK
+        if res["has_electricity"] is True:
+            return ELECTRICITY_OK.format(res["message"])
         else:
-            return ELECTRICITY_FAIL
+            return ELECTRICITY_FAIL.format(res["message"])
     except requests.exceptions.RequestException as e:
         logger.error(f"Get status request failed: {e}")
+        return ELECTRICITY_UNKNOWN
 
 
 def subscribe_user(message):
@@ -158,8 +130,8 @@ def unsubscribe_user(message):
         logger.error(f"Unsubscribe request failed for chat_id #{chat_id}: {e}")
 
 
-def notify(hasElectricuty):
-    if hasElectricuty is True:
+def notify(has_electricity: bool):
+    if has_electricity is True:
         message = ELECTRICITY_BACK
     else:
         message = ELECTRICITY_GONE
