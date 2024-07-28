@@ -47,7 +47,7 @@ class YasnoAPI:
 
     def get_current_event(self, at: datetime) -> dict | None:
         if self.schedule is not None:
-            raw = self.__get_current_event(at=datetime.now() + timedelta(hours=0))
+            raw = self.__get_current_event(at=datetime.now() + timedelta(days=1))
 
             event = Event()
             event.add(KIND, self.__convert_kind_to_ical(raw.get("type")))
