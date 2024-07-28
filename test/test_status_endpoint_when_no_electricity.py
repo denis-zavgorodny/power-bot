@@ -67,6 +67,28 @@ class TestStatusEndpointWhenNoElectricity(unittest.TestCase):
     @patch('main.datetime')
     @patch('yasno.power_state.datetime')
     @patch('yasno.api.datetime')
+    def test_when_dark_zone_and_error_in_api(self, yasno_api_mock_datetime, yasno_power_mock_datetime, main_mock_datetime, mocked_request):
+        # when
+        main_mock_datetime.now.return_value = self.__dark_zone_datetime
+        yasno_power_mock_datetime.now.return_value = self.__dark_zone_datetime
+        yasno_api_mock_datetime.now.return_value = self.__dark_zone_datetime
+
+        # when
+        mocked_request.get.return_value.status_code = 500
+
+        response = self.client.get('/status')
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("has_electricity", response.json)
+        self.assertEqual({
+            "has_electricity": False
+        } ,response.json)
+
+    @patch('yasno.api.requests')
+    @patch('main.datetime')
+    @patch('yasno.power_state.datetime')
+    @patch('yasno.api.datetime')
     def test_when_grey_zone(self, yasno_api_mock_datetime, yasno_power_mock_datetime, main_mock_datetime, mocked_request):
         # when
         with open(Path(__file__).parent / "__mocks__/http_calendar.json") as f:

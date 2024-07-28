@@ -36,8 +36,9 @@ class YasnoAPI:
         self.logger = get_logger()
         self.ical = None
         self.schedule = None
+        self.autoload = autoload
 
-        if autoload is True:
+        if self.autoload is True:
             self.schedule = self.__load_calendar()
         else:
             peth_to_calendar = Path(__file__).parent.parent / config.get("YASNO_ICAL_PATH")
@@ -46,7 +47,7 @@ class YasnoAPI:
 
 
     def get_current_event(self, at: datetime) -> dict | None:
-        if self.schedule is not None:
+        if self.autoload is True:
             raw = self.__get_current_event(at=datetime.now() + timedelta(hours=0))
             if raw is None:
                 return None
@@ -70,7 +71,7 @@ class YasnoAPI:
             return None
 
     def next_off(self):
-        if self.schedule is not None:
+        if self.autoload is True:
             raw = self.__get_next_off()
 
             event = Event()
@@ -137,6 +138,8 @@ class YasnoAPI:
 
     def __get_city_groups(self, city: str) -> dict[str, list]:
         """Get all schedules for all of available groups for a city."""
+        if self.schedule is None:
+            raise Exception("Schedule is not ready")
         return self.schedule.get(city, {}) if self.schedule else {}
 
     def __get_group_schedule(self, city: str, group: str) -> list:

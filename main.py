@@ -120,15 +120,15 @@ def stat():
 def status():
     logger = get_logger()
     try:
-        yasno = YasnoAPI(autoload=True)
-        power_status = Power(yasno)
-
         current_time = datetime.now() - timedelta(minutes=5)
 
         table = db.Table('signal')
         res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
             Signal.timestamp > current_time
         )).fetchall()
+
+        yasno = YasnoAPI(autoload=True)
+        power_status = Power(yasno)
 
         return jsonify(power_status.predict(len(res) > 0)), 200
 

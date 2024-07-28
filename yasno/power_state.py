@@ -21,34 +21,34 @@ class Power:
         message: str
 
     def predict(self, has_electricity: bool) -> Prediction:
-        message = self.__get_message(has_electricity)
-
-        return self.Prediction(has_electricity=has_electricity, message=message)
+        try:
+            message = self.__get_message(has_electricity)
+            return self.Prediction(has_electricity=has_electricity, message=message)
+        except Exception as e:
+            self.logger.error(f"Prediction error: {e}")
+            return self.Prediction(has_electricity=has_electricity)
 
     def __get_message(self, has_electricity: bool) -> str:
-        try:
-            currentState = self.calendar.get_current_event(at=datetime.now())
-            if has_electricity is True and currentState is None:
-                nextState = self.calendar.next_off()
-                next_date = nextState.decoded(START).strftime("%Y-%m-%d %H:%M")
-                message = f"Наступне відключення: {next_date}"
-            elif has_electricity is True and currentState is not None:
+        currentState = self.calendar.get_current_event(at=datetime.now())
+        if has_electricity is True and currentState is None:
+            nextState = self.calendar.next_off()
+            next_date = nextState.decoded(START).strftime("%Y-%m-%d %H:%M")
+            message = f"Наступне відключення: {next_date}"
+        elif has_electricity is True and currentState is not None:
+            next_date = currentState.decoded(END).strftime("%H:%M")
+            message = f"Світло все ще можуть вимкнути до {next_date}"
+        elif has_electricity is False and currentState is None:
+            message = "Планового відключення не мало б бути"
+        else:
+            if self.__is_dark_zone(currentState):
                 next_date = currentState.decoded(END).strftime("%H:%M")
-                message = f"Світло все ще можуть вимкнути до {next_date}"
-            elif has_electricity is False and currentState is None:
-                message = "Планового відключення не мало б бути"
+                message = f"Світло може повернутись в {next_date} якщо не буде застосовано світло-сірі зони"
             else:
-                if self.__is_dark_zone(currentState):
-                    next_date = currentState.decoded(END).strftime("%H:%M")
-                    message = f"Світло може повернутись в {next_date} якщо не буде застосовано світло-сірі зони"
-                else:
-                    next_date = currentState.decoded(END).strftime("%H:%M")
-                    message = f"Світло має повернутись до {next_date}. Зараз діє світло-сіра зона, світло можуть ввімкнути в будь-який момент"
+                next_date = currentState.decoded(END).strftime("%H:%M")
+                message = f"Світло має повернутись до {next_date}. Зараз діє світло-сіра зона, світло можуть ввімкнути в будь-який момент"
 
-            return message
-        except Exception as e:
-            self.logger.error(e)
-            return ""
+        return message
+
 
     def __is_dark_zone(self, state: Dict) -> bool:
         return state.get(KIND) == DARK
