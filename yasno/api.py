@@ -52,13 +52,13 @@ class YasnoAPI:
                 return None
 
             event = Event()
-            event.add(KIND, self.__convert_kind_to_ical(raw.get("type")))
+            event.add(KIND, self.__convert_kind_to_ical(raw.get("summary")))
             event.add(START, raw.get("start"))
             event.add(END, raw.get("end"))
 
             return event
 
-        else:
+        elif self.ical is not None:
             events = self.ical.at(at)
 
             if events is None:
@@ -66,6 +66,8 @@ class YasnoAPI:
             elif len(events) == 0:
                 return None
             return events[0]
+        else:
+            return None
 
     def next_off(self):
         if self.schedule is not None:
