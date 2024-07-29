@@ -95,7 +95,8 @@ def get_status():
             return ELECTRICITY_OK.format(res["message"])
         else:
             return ELECTRICITY_FAIL.format(res["message"])
-    except requests.exceptions.RequestException as e:
+
+    except Exception as e:
         logger.error(f"Get status request failed: {e}")
         return ELECTRICITY_UNKNOWN
 
