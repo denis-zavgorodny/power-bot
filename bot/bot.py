@@ -92,6 +92,8 @@ def get_status():
         res = response.json()
 
         message = res.get("message")
+        if message is None:
+            message = ""
 
         if res["has_electricity"] is True:
             return ELECTRICITY_OK.format(message)
