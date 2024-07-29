@@ -120,7 +120,6 @@ def stat():
 @app.route("/status")
 def status():
     logger = get_logger()
-    difference_in_hours_db = get_db_time_difference_in_hours()
     try:
         # we do not need timezone here, we want to get data from the database
         # based on the local time
