@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import recurring_ical_events
 import requests
 import requests_cache
+from timezone import timezone
 
 from icalendar import Calendar, Event
 from pathlib import Path
@@ -48,7 +49,7 @@ class YasnoAPI:
 
     def get_current_event(self, at: datetime) -> dict | None:
         if self.autoload is True:
-            raw = self.__get_current_event(at=datetime.now() + timedelta(hours=0))
+            raw = self.__get_current_event(at=datetime.now(tz=timezone) + timedelta(hours=0))
             if raw is None:
                 return None
 
@@ -82,7 +83,7 @@ class YasnoAPI:
             return event
 
         else:
-            events = self.ical.between(start=datetime.now(), stop=datetime.now() + timedelta(days=1))
+            events = self.ical.between(start=datetime.now(tz=timezone), stop=datetime.now(tz=timezone) + timedelta(days=1))
 
             if events is None:
                 return None
@@ -132,7 +133,7 @@ class YasnoAPI:
                 return event
         return None
     def __get_next_off(self):
-        for event in self.__get_events(datetime.now(), datetime.now() + timedelta(days=1)):
+        for event in self.__get_events(datetime.now(tz=timezone), datetime.now(tz=timezone) + timedelta(days=1)):
             if event["summary"] == "DEFINITE_OUTAGE":
                 return event
         return None

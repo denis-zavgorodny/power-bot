@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from functools import wraps
 from typing import Sequence
+from timezone import timezone
 
 import pytz
 from dotenv import dotenv_values
@@ -120,7 +121,7 @@ def stat():
 def status():
     logger = get_logger()
     try:
-        current_time = datetime.now() - timedelta(minutes=5)
+        current_time = datetime.now(tz=timezone) - timedelta(minutes=5)
 
         table = db.Table('signal')
         res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
