@@ -122,7 +122,7 @@ class YasnoAPI:
 
             return None
         except Exception as e:
-            self.logger.error("Fetching schedule from API error: {e}")
+            self.logger.error(f"Fetching schedule from API error: {e}")
             return None
 
     def __get_current_event(self, at: datetime) -> dict | None:
