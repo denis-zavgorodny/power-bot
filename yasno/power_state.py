@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Dict
 
+import pytz
+
 from logger import get_logger
 from yasno.api import YasnoAPI
 
@@ -29,7 +31,8 @@ class Power:
             return self.Prediction(has_electricity=has_electricity)
 
     def __get_message(self, has_electricity: bool) -> str:
-        currentState = self.calendar.get_current_event(at=datetime.now())
+        timezone = pytz.timezone("Europe/Kiev")
+        currentState = self.calendar.get_current_event(at=datetime.now(tz=timezone))
         if has_electricity is True and currentState is None:
             nextState = self.calendar.next_off()
             next_date = nextState.decoded(START).strftime("%Y-%m-%d %H:%M")
