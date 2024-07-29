@@ -91,10 +91,12 @@ def get_status():
         response = requests.get(config.get("GET_STATUS_ENDPOINT"))
         res = response.json()
 
+        message = res.get("message")
+
         if res["has_electricity"] is True:
-            return ELECTRICITY_OK.format(res["message"])
+            return ELECTRICITY_OK.format(message)
         else:
-            return ELECTRICITY_FAIL.format(res["message"])
+            return ELECTRICITY_FAIL.format(message)
 
     except Exception as e:
         logger.error(f"Get status request failed: {e}")
