@@ -25,6 +25,7 @@ KIND = "SUMMARY"
 
 requests_cache.install_cache('calendar_cache', expire_after=3600)
 
+
 #
 # The implementation has been copied from HA integration:
 # https://github.com/denysdovhan/ha-yasno-outages/blob/main/custom_components/yasno_outages/api.py
@@ -45,7 +46,6 @@ class YasnoAPI:
             peth_to_calendar = Path(__file__).parent.parent / config.get("YASNO_ICAL_PATH")
             with peth_to_calendar.open() as file:
                 self.ical = recurring_ical_events.of(Calendar.from_ical(file.read()))
-
 
     def get_current_event(self, at: datetime) -> dict | None:
         if self.autoload is True:
@@ -83,7 +83,8 @@ class YasnoAPI:
             return event
 
         else:
-            events = self.ical.between(start=datetime.now(tz=timezone), stop=datetime.now(tz=timezone) + timedelta(days=1))
+            events = self.ical.between(start=datetime.now(tz=timezone),
+                                       stop=datetime.now(tz=timezone) + timedelta(days=1))
 
             if events is None:
                 return None
@@ -105,7 +106,7 @@ class YasnoAPI:
         try:
             response = requests.get(config.get("YASNO_API_URL"), timeout=60)
             response.raise_for_status()
-            res =response.json()
+            res = response.json()
 
             component = next(
                 (
@@ -134,7 +135,8 @@ class YasnoAPI:
                 next_event = res[index + 1]
             except Exception as e:
                 next_event = None
-            if next_event is not None and event["start"] <= at < event["end"] and  event["summary"] == next_event["summary"]:
+            if next_event is not None and event["start"] <= at < event["end"] and event["summary"] == next_event[
+                "summary"]:
                 return {
                     "start": event["start"],
                     "end": next_event["end"],
@@ -144,6 +146,7 @@ class YasnoAPI:
                 return event
 
         return None
+
     def __get_next_off(self):
         for event in self.__get_events(datetime.now(tz=timezone), datetime.now(tz=timezone) + timedelta(days=1)):
             if event["summary"] == "DEFINITE_OUTAGE":
@@ -178,8 +181,6 @@ class YasnoAPI:
             return []
         group_schedule = self.__get_group_schedule(self.__city, self.__group)
         events = []
-
-
 
         # For each day of the week in the schedule
         for dow, day_events in enumerate(group_schedule):
@@ -223,5 +224,3 @@ class YasnoAPI:
 
         # Sort events by start time to ensure correct order
         return sorted(events, key=lambda event: event["start"])
-
-
