@@ -127,10 +127,22 @@ class YasnoAPI:
             return None
 
     def __get_current_event(self, at: datetime) -> dict | None:
-        """Get the current event."""
-        for event in self.__get_events(at, at + timedelta(days=1)):
-            if event["start"] <= at < event["end"]:
+        res = self.__get_events(at, at + timedelta(days=1))
+        events = enumerate(res)
+        for index, event in events:
+            try:
+                next_event = res[index + 1]
+            except Exception as e:
+                next_event = None
+            if next_event is not None and event["start"] <= at < event["end"] and  event["summary"] == next_event["summary"]:
+                return {
+                    "start": event["start"],
+                    "end": next_event["end"],
+                    "summary": event["summary"]
+                }
+            elif event["start"] <= at < event["end"]:
                 return event
+
         return None
     def __get_next_off(self):
         for event in self.__get_events(datetime.now(tz=timezone), datetime.now(tz=timezone) + timedelta(days=1)):
