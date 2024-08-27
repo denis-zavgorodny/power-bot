@@ -37,8 +37,7 @@ class Power:
             nextState = self.calendar.next_off()
             next_date = nextState.decoded(START).strftime("%Y-%m-%d %H:%M")
             next_time = nextState.decoded(START).strftime("%H:%M")
-            w = self.__is_today(nextState.decoded(START))
-            text_day = ""
+
             if self.__is_today(nextState.decoded(START)):
                 text_day = f"сьогодні о {next_time}"
             elif self.__is_tomorrow(nextState.decoded(END)):
