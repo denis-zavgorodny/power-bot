@@ -12,8 +12,6 @@ from models.signal import Signal
 class TestStatusEndpointWhenElectricityTomorrow(unittest.TestCase):
     __white_zone_datetime_tomorrow = datetime(2024, 7, 28, 23, 00, 0)
 
-    # __last_signal_time_tomorrow = datetime(2024, 7, 29, 3, 0, 0)
-
     @classmethod
     def setUpClass(cls):
         app.testing = True
