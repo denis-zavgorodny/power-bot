@@ -4,3 +4,4 @@
 instance
 *.log
 __pycache__/
+*.sqlite

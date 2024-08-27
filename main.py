@@ -2,7 +2,9 @@ from datetime import datetime, timedelta
 
 from functools import wraps
 from typing import Sequence
+from timezone import timezone
 
+import pytz
 from dotenv import dotenv_values
 from flask import request, jsonify, send_file
 from sqlalchemy import Row
@@ -11,6 +13,8 @@ from chart.main import plot
 from init import db, app
 from logger import get_logger
 from models.signal import Signal
+from yasno.api import YasnoAPI, OFF
+from yasno.power_state import Power
 
 config = dotenv_values(".env")
 
@@ -115,18 +119,55 @@ def stat():
 
 @app.route("/status")
 def status():
-    current_time = datetime.now() - timedelta(minutes=5)
+    logger = get_logger()
+    try:
+        # we do not need timezone here, we want to get data from the database
+        # based on the local time
+        current_time = datetime.now() - timedelta(minutes=5)
 
-    table = db.Table('signal')
-    res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
-        Signal.timestamp > current_time
-    )).fetchall()
+        table = db.Table('signal')
+        res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
+            Signal.timestamp > current_time
+        )).fetchall()
 
-    if len(res) < 1:
-        return jsonify({"hasElectricity": False}), 200
+        yasno = YasnoAPI(autoload=True)
+        power_status = Power(yasno)
 
-    return jsonify({"hasElectricity": True}), 200
+        return jsonify(power_status.predict(len(res) > 0)), 200
 
+    except Exception as e:
+        logger.error(f"HTTP /status endpoint error: {e}")
+        raise e
+
+
+
+@app.route("/calendar")
+def calendar():
+    yasno = YasnoAPI(autoload=True)
+    currentState = yasno.get_current_event(at = datetime.now())
+
+    if currentState is None:
+        next = yasno.next_off()
+
+        return {
+            "event_state": next.get("SUMMARY"),
+            "event_start": next.decoded("DTSTART").strftime("%Y-%m-%d %H:%M:%S"),
+            "event_end": next.decoded("DTEND").strftime("%Y-%m-%d %H:%M:%S"),
+        }, 200
+
+    # if currentState.get("SUMMARY") == "off":
+    #     next = yasno.next_off()
+
+
+    event_state = currentState.get("SUMMARY")
+    event_start = currentState.decoded("DTSTART")
+    event_end = currentState.decoded("DTEND")
+
+    return {
+        "event_state": event_state,
+        "event_start": event_start.strftime("%Y-%m-%d %H:%M:%S"),
+        "event_end": event_end.strftime("%Y-%m-%d %H:%M:%S"),
+    }, 200
 
 def get_time_difference_in_hours():
     ###
@@ -151,4 +192,4 @@ def get_db_time_difference_in_hours():
     return int(config.get("DB_TIME_ZONE_DIFF"))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=config.get("PORT"))
