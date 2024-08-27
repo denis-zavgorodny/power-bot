@@ -114,7 +114,7 @@ class TestStatusEndpointWhenElectricity(unittest.TestCase):
         self.assertIn("has_electricity", response.json)
         self.assertEqual({
             "has_electricity": True,
-            "message": "Наступне відключення: 2024-07-29 10:00"
+            "message": "Наступне відключення сьогодні о 10:00"
         } ,response.json)
 
 if __name__ == '__main__':
