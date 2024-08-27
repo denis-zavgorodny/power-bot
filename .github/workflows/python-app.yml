@@ -31,6 +31,8 @@ jobs:
     - name: Create ENV file
       run: |
         echo "${{ secrets.DOT_ENV }}" > .env
+        ls -la
+        cat .env
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
