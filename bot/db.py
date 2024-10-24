@@ -20,7 +20,7 @@ Session = sessionmaker(bind=engine)
 
 # Create a Session
 session = Session()
-print('DB created')
+print('DB created: subscriptions')
 
 
 # CRUD operations

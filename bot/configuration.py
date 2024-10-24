@@ -1,0 +1,47 @@
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+engine = create_engine('sqlite:///instance/conf.db')
+Base = declarative_base()
+
+
+class Configuration(Base):
+    __tablename__ = 'configuration'
+
+    key = Column(String, primary_key=True, nullable=False)
+    value = Column(String, unique=True, nullable=False)
+
+# Create all tables in the engine. This is equivalent to "Create Table" statements in raw SQL.
+Base.metadata.create_all(engine)
+
+# Create a configured "Session" class
+Session = sessionmaker(bind=engine)
+
+# Create a Session
+session = Session()
+print('DB created: configuration')
+
+def get(key):
+    return session.query(Configuration).filter_by(key=key).first()
+
+
+def set_configuration(key, value):
+    new_configuration = Configuration(key=key, value=value)
+
+    session.add(new_configuration)
+    session.commit()
+
+
+def is_maintenance_mode() -> bool:
+    if get("maintenance_mode") in ["True", "true"]:
+        return True
+
+    return False
+
+
+def enable_maintenance_mode():
+    set_configuration("maintenance_mode", "True")
+
+
+def disable_maintenance_mode():
+    set_configuration("maintenance_mode", "False")
