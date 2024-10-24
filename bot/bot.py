@@ -4,13 +4,14 @@ import requests
 from dotenv import dotenv_values
 from threading import Thread
 
+from configuration import is_maintenance_mode, enable_maintenance_mode, disable_maintenance_mode
 from db import subscribe, get_all_subscribers, get_subscriber, unsubscribe
 from logger import get_logger
 
 from pooling import pooling_status
 from text_messages import GREATING_TEXT, ELECTRICITY_OK, ELECTRICITY_FAIL, ELECTRICITY_UNKNOWN, THANKS_FOR_SUBSCRIPTION, \
     YOU_HAVE_SUBSCRIBED, SUBSCRIPTION_WITH_ERROR, UNSIBSCRIBE_MESSAGE, UNSIBSCRIBE_MESSAGE_NO_USER, ELECTRICITY_BACK, \
-    ELECTRICITY_GONE
+    ELECTRICITY_GONE, MAINTENANCE_MODE_ON, MAINTENANCE_MODE_OFF, BOT_DEFAULT_ERROR_MESSAGE
 
 logger = get_logger()
 
@@ -67,6 +68,20 @@ def send_subscribe(message):
 def send_unsubscribe(message):
     bot.reply_to(message, unsubscribe_user(message))
 
+
+@bot.message_handler(commands=['maintenance'])
+def maintenance_mode(message):
+    bot.reply_to(message, set_maintenance_mode(message))
+
+
+@bot.message_handler(commands=['maintenance_on'])
+def maintenance_mode(message):
+    bot.reply_to(message, set_maintenance_mode_on(message))
+
+
+@bot.message_handler(commands=['maintenance_off'])
+def maintenance_mode(message):
+    bot.reply_to(message, set_maintenance_mode_off(message))
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_query(call):
@@ -135,6 +150,48 @@ def unsubscribe_user(message):
         logger.error(f"Unsubscribe request failed for chat_id #{chat_id}: {e}")
 
 
+def set_maintenance_mode(message):
+    chat_id = message.chat.id
+
+    try:
+        if is_maintenance_mode():
+            return MAINTENANCE_MODE_ON
+        else:
+            enable_maintenance_mode()
+            return MAINTENANCE_MODE_OFF
+    except Exception as e:
+        logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
+        return BOT_DEFAULT_ERROR_MESSAGE
+
+
+def set_maintenance_mode_on(message):
+    chat_id = message.chat.id
+
+    try:
+        if is_maintenance_mode():
+            return MAINTENANCE_MODE_ON
+        else:
+            enable_maintenance_mode()
+            return MAINTENANCE_MODE_ON
+    except Exception as e:
+        logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
+        return BOT_DEFAULT_ERROR_MESSAGE
+
+
+def set_maintenance_mode_off(message):
+    chat_id = message.chat.id
+
+    try:
+        if is_maintenance_mode():
+            disable_maintenance_mode()
+            return MAINTENANCE_MODE_OFF
+        else:
+            return MAINTENANCE_MODE_OFF
+    except Exception as e:
+        logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
+        return BOT_DEFAULT_ERROR_MESSAGE
+
+
 def notify(has_electricity: bool):
     if has_electricity is True:
         message = ELECTRICITY_BACK
@@ -142,6 +199,9 @@ def notify(has_electricity: bool):
         message = ELECTRICITY_GONE
 
     subscribed_users = get_all_subscribers()
+
+    if is_maintenance_mode():
+        return
 
     for user in subscribed_users:
         try:
