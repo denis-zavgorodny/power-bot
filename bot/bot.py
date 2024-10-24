@@ -74,6 +74,14 @@ def maintenance_mode(message):
     bot.reply_to(message, set_maintenance_mode(message))
 
 
+@bot.message_handler(commands=['maintenance_on'])
+def maintenance_mode(message):
+    bot.reply_to(message, set_maintenance_mode_on(message))
+
+
+@bot.message_handler(commands=['maintenance_off'])
+def maintenance_mode(message):
+    bot.reply_to(message, set_maintenance_mode_off(message))
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_query(call):
@@ -147,11 +155,38 @@ def set_maintenance_mode(message):
 
     try:
         if is_maintenance_mode():
-            disable_maintenance_mode()
+            return MAINTENANCE_MODE_ON
+        else:
+            enable_maintenance_mode()
             return MAINTENANCE_MODE_OFF
+    except Exception as e:
+        logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
+        return BOT_DEFAULT_ERROR_MESSAGE
+
+
+def set_maintenance_mode_on(message):
+    chat_id = message.chat.id
+
+    try:
+        if is_maintenance_mode():
+            return MAINTENANCE_MODE_ON
         else:
             enable_maintenance_mode()
             return MAINTENANCE_MODE_ON
+    except Exception as e:
+        logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
+        return BOT_DEFAULT_ERROR_MESSAGE
+
+
+def set_maintenance_mode_off(message):
+    chat_id = message.chat.id
+
+    try:
+        if is_maintenance_mode():
+            disable_maintenance_mode()
+            return MAINTENANCE_MODE_OFF
+        else:
+            return MAINTENANCE_MODE_OFF
     except Exception as e:
         logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
         return BOT_DEFAULT_ERROR_MESSAGE
