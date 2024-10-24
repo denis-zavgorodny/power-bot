@@ -1,9 +1,12 @@
 from sqlalchemy import create_engine, Column, Integer, String, update
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+from logger import get_logger
+
 engine = create_engine('sqlite:///instance/conf.db')
 Base = declarative_base()
 
+logger = get_logger()
 
 class Configuration(Base):
     __tablename__ = 'configuration'
@@ -39,6 +42,8 @@ def set_configuration(key, value):
 
 
 def is_maintenance_mode() -> bool:
+    res = get("maintenance_mode")
+    logger.error(f"is_maintenance_mode: #{res}")
     if get("maintenance_mode") in ["true", "True", "TRUE"]:
         return True
 
