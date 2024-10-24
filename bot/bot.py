@@ -148,10 +148,10 @@ def set_maintenance_mode(message):
     try:
         if is_maintenance_mode():
             disable_maintenance_mode()
-            return MAINTENANCE_MODE_ON
+            return MAINTENANCE_MODE_OFF
         else:
             enable_maintenance_mode()
-            return MAINTENANCE_MODE_OFF
+            return MAINTENANCE_MODE_ON
     except Exception as e:
         logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
         return BOT_DEFAULT_ERROR_MESSAGE

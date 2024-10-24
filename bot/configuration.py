@@ -11,6 +11,7 @@ class Configuration(Base):
     key = Column(String, unique=False, primary_key=True, nullable=False)
     value = Column(String, unique=False, nullable=False)
 
+
 # Create all tables in the engine. This is equivalent to "Create Table" statements in raw SQL.
 Base.metadata.create_all(engine)
 
@@ -21,7 +22,8 @@ Session = sessionmaker(bind=engine)
 session = Session()
 print('DB created: configuration')
 
-def get(key):
+
+def get(key) -> String | None:
     return session.query(Configuration).filter_by(key=key).first()
 
 
