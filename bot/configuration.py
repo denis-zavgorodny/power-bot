@@ -23,7 +23,12 @@ session = Session()
 print('DB created: configuration')
 
 
-def get(key) -> str:
+def get(key) -> str | None:
+    value = session.query(Configuration).filter_by(key=key).first()
+
+    if value in None:
+        return None
+
     return session.query(Configuration).filter_by(key=key).first().value
 
 
