@@ -44,6 +44,11 @@ def set_configuration(key, value):
 
 
 def is_maintenance_mode() -> bool:
+    value = get("maintenance_mode")
+
+    if value is None:
+        return False
+
     if get("maintenance_mode") in ["true", "True", "TRUE"]:
         return True
 
