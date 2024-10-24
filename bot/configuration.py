@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String, update
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 engine = create_engine('sqlite:///instance/conf.db')
@@ -26,9 +26,13 @@ def get(key):
 
 
 def set_configuration(key, value):
-    new_configuration = Configuration(key=key, value=value)
+    if get("maintenance_mode") is not None:
+        session.execute(update(Configuration).where(Configuration.key == key).values(value=value))
+    else:
+        new_configuration = Configuration(key=key, value=value)
 
-    session.add(new_configuration)
+        session.add(new_configuration)
+
     session.commit()
 
 
