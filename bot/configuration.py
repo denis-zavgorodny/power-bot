@@ -26,8 +26,8 @@ session = Session()
 print('DB created: configuration')
 
 
-def get(key) -> String | None:
-    return session.query(Configuration).filter_by(key=key).first()
+def get(key) -> str:
+    return session.query(Configuration).filter_by(key=key).first().value
 
 
 def set_configuration(key, value):
