@@ -8,8 +8,8 @@ Base = declarative_base()
 class Configuration(Base):
     __tablename__ = 'configuration'
 
-    key = Column(String, primary_key=True, nullable=False)
-    value = Column(String, unique=True, nullable=False)
+    key = Column(String, unique=False, primary_key=True, nullable=False)
+    value = Column(String, unique=False, nullable=False)
 
 # Create all tables in the engine. This is equivalent to "Create Table" statements in raw SQL.
 Base.metadata.create_all(engine)
