@@ -49,7 +49,7 @@ def is_maintenance_mode() -> bool:
     if value is None:
         return False
 
-    if get("maintenance_mode") in ["true", "True", "TRUE"]:
+    if get("maintenance_mode") in ["true", "True", "TRUE", True]:
         return True
 
     return False
