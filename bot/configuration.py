@@ -28,7 +28,7 @@ print('DB created: configuration')
 
 def get(key) -> str | None:
     value = session.query(Configuration).filter_by(key=key).first()
-    logger.error(f"Value maintenance #{value}")
+    logger.error(f"Value maintenance #{value.value}")
     if value is None:
         return None
 
