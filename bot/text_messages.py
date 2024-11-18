@@ -43,7 +43,7 @@ MAINTENANCE_MODE_SET_ON = " Режим обслуговання активова
 MAINTENANCE_MODE_ON = " Поточний режим – Режим обслуговання"
 
 MAINTENANCE_MODE_SET_OFF = " Режим обслуговання деактивовано"
-MAINTENANCE_MODE_OFF = " Поточний режим –режим обслуговання"
+MAINTENANCE_MODE_OFF = " Поточний режим – нормальний"
 
 # Error
 BOT_DEFAULT_ERROR_MESSAGE = "Щось пішло не так"
