@@ -11,7 +11,7 @@ from logger import get_logger
 from pooling import pooling_status
 from text_messages import GREATING_TEXT, ELECTRICITY_OK, ELECTRICITY_FAIL, ELECTRICITY_UNKNOWN, THANKS_FOR_SUBSCRIPTION, \
     YOU_HAVE_SUBSCRIBED, SUBSCRIPTION_WITH_ERROR, UNSIBSCRIBE_MESSAGE, UNSIBSCRIBE_MESSAGE_NO_USER, ELECTRICITY_BACK, \
-    ELECTRICITY_GONE, MAINTENANCE_MODE_ON, MAINTENANCE_MODE_OFF, BOT_DEFAULT_ERROR_MESSAGE
+    ELECTRICITY_GONE, MAINTENANCE_MODE_ON, MAINTENANCE_MODE_SET_ON, MAINTENANCE_MODE_OFF, MAINTENANCE_MODE_SET_OFF, BOT_DEFAULT_ERROR_MESSAGE
 
 logger = get_logger()
 
@@ -71,7 +71,7 @@ def send_unsubscribe(message):
 
 @bot.message_handler(commands=['maintenance'])
 def maintenance_mode(message):
-    bot.reply_to(message, set_maintenance_mode(message))
+    bot.reply_to(message, print_maintenance_mode(message))
 
 
 @bot.message_handler(commands=['maintenance_on'])
@@ -164,6 +164,19 @@ def set_maintenance_mode(message):
         return BOT_DEFAULT_ERROR_MESSAGE
 
 
+def print_maintenance_mode(message):
+    chat_id = message.chat.id
+
+    try:
+        if is_maintenance_mode():
+            return MAINTENANCE_MODE_ON
+        else:
+            return MAINTENANCE_MODE_OFF
+    except Exception as e:
+        logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
+        return BOT_DEFAULT_ERROR_MESSAGE
+
+
 def set_maintenance_mode_on(message):
     chat_id = message.chat.id
 
@@ -172,7 +185,7 @@ def set_maintenance_mode_on(message):
             return MAINTENANCE_MODE_ON
         else:
             enable_maintenance_mode()
-            return MAINTENANCE_MODE_ON
+            return MAINTENANCE_MODE_SET_ON
     except Exception as e:
         logger.error(f"Set maintenance mode request failed for chat_id #{chat_id}: {e}")
         return BOT_DEFAULT_ERROR_MESSAGE
@@ -181,10 +194,11 @@ def set_maintenance_mode_on(message):
 def set_maintenance_mode_off(message):
     chat_id = message.chat.id
 
+    logger.error(f"is_maintenance_mode() #{is_maintenance_mode()}")
     try:
         if is_maintenance_mode():
             disable_maintenance_mode()
-            return MAINTENANCE_MODE_OFF
+            return MAINTENANCE_MODE_SET_OFF
         else:
             return MAINTENANCE_MODE_OFF
     except Exception as e:
