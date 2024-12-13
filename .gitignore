@@ -3,5 +3,6 @@
 .idea/
 instance
 *.log
+*.log.bkp
 __pycache__/
 *.sqlite
