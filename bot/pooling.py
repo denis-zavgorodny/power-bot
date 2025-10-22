@@ -32,7 +32,7 @@ def pooling_status(endpoint, callback, interval=30):
 
                 isElectricityAvailable = False
 
-            logger.debug(f"Pooling status: {isElectricityAvailable}")
+            logger.info(f"Pooling status: {isElectricityAvailable}")
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Pooling status request failed: {e}")
