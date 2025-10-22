@@ -220,6 +220,7 @@ def notify(has_electricity: bool):
     for user in subscribed_users:
         try:
             bot.send_message(user.chat_id, message)
+            logger.debug(f"Notification is sent successfuly for chat #{user.chat_id}: {e}")
         except Exception as e:
             logger.error(f"Notification error for chat #{user.chat_id}: {e}")
 
