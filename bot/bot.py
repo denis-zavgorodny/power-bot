@@ -234,7 +234,6 @@ def start_bot():
 
 
 if __name__ == '__main__':
-    logger.error("Bot started")
     # Start the bot in a separate thread
     bot_thread = Thread(target=start_bot)
     bot_thread.start()
