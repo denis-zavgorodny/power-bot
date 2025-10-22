@@ -216,6 +216,7 @@ def notify(has_electricity: bool):
     subscribed_users = get_all_subscribers()
 
     if is_maintenance_mode():
+        logger.info(f"Notification is not sent. Maintenance mode is active")
         return
 
     for user in subscribed_users:
