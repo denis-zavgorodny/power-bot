@@ -237,6 +237,6 @@ if __name__ == '__main__':
     # Start the bot in a separate thread
     bot_thread = Thread(target=start_bot)
     bot_thread.start()
-    logger.debug("Bot started")
+    logger.info("Bot started")
 
     pooling_status(config.get("GET_STATUS_ENDPOINT"), notify)
