@@ -130,7 +130,7 @@ def status():
             Signal.timestamp > current_time
         )).fetchall()
 
-        yasno = YasnoAPI(autoload=True)
+        yasno = YasnoAPI(autoload=False)
         power_status = Power(yasno)
 
         return jsonify(power_status.predict(len(res) > 0)), 200
@@ -143,7 +143,7 @@ def status():
 
 @app.route("/calendar")
 def calendar():
-    yasno = YasnoAPI(autoload=True)
+    yasno = YasnoAPI(autoload=False)
     currentState = yasno.get_current_event(at = datetime.now())
 
     if currentState is None:
