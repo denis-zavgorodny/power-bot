@@ -123,7 +123,7 @@ def status():
     try:
         # we do not need timezone here, we want to get data from the database
         # based on the local time
-        current_time = datetime.now() - timedelta(minutes=5)
+        current_time = datetime.now() - timedelta(minutes=10)
 
         table = db.Table('signal')
         res: Sequence[Row[Signal]] = db.engine.connect().execute(table.select().filter(
