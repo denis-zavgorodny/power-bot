@@ -1,4 +1,5 @@
 .venv
+venv
 .env
 .idea/
 instance
@@ -6,3 +7,4 @@ instance
 *.log.bkp
 __pycache__/
 *.sqlite
+*.tar.gz
