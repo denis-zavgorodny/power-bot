@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 
 from functools import wraps
 from typing import Sequence
@@ -139,6 +140,33 @@ def status():
         logger.error(f"HTTP /status endpoint error: {e}")
         raise e
 
+
+@app.route("/health", methods=["GET"])
+def health():
+    logger = get_logger()
+    try:
+        key = request.args.get("key")
+        
+        if key == "keenetic":
+            # Write current timestamp to local file
+            timestamp = datetime.now().isoformat()
+            health_file = os.path.join("instance", "health_keenetic.txt")
+            
+            # Ensure instance directory exists
+            os.makedirs(os.path.dirname(health_file), exist_ok=True)
+            
+            # Write timestamp to file
+            with open(health_file, "w") as f:
+                f.write(timestamp)
+            
+            logger.info(f"Health check from keenetic: {timestamp}")
+            return jsonify({"status": "ok", "timestamp": timestamp}), 200
+        else:
+            return jsonify({"error": "Invalid or missing key"}), 403
+            
+    except Exception as e:
+        logger.error(f"HTTP /health endpoint error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @app.route("/calendar")

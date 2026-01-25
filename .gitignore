@@ -8,3 +8,5 @@ instance
 __pycache__/
 *.sqlite
 *.tar.gz
+health_keenetic.txt
+electricity_state.json
